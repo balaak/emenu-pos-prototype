@@ -756,6 +756,13 @@
   .slide.is-done .slide__thumb{background:#fff;color:var(--danger);}
   @keyframes slidehint{0%,100%{transform:translateX(0);}42%{transform:translateX(13px);}72%{transform:translateX(0);}}
   .slide__thumb.hint{animation:slidehint 1.05s var(--ease) 2;}
+  .slide--cancel .slide__track{background:var(--surface-3);border-color:var(--line-strong);}
+  .slide--cancel .slide__track::before{background:color-mix(in srgb,var(--ink) 12%,transparent);}
+  .slide--cancel .slide__label{color:var(--ink-soft);}
+  .slide--cancel .slide__thumb{background:var(--ink);color:#fff;}
+  .slide--cancel.is-done .slide__track{background:var(--ink);border-color:var(--ink);}
+  .slide--cancel.is-done .slide__label{color:#fff;}
+  .slide--cancel.is-done .slide__thumb{background:#fff;color:var(--ink);}
 
   /* ===================== Flow stepper (Table / Review / Pay) ===================== */
   .stepper{display:flex;gap:8px;padding:2px 18px 10px;flex:0 0 auto;}
@@ -1349,6 +1356,12 @@
 
       <div class="actionbar">
         <div class="qr-wait"><span class="qr-wait__dot"></span>Waiting for the guest to pay</div>
+        <div class="slide slide--cancel" id="qrCancelSlide" role="button" tabindex="0" aria-label="Swipe to cancel and switch method">
+          <div class="slide__track">
+            <span class="slide__label">Swipe to Cancel and Switch</span>
+            <div class="slide__thumb" aria-hidden="true"><svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"><path d="M64,52l76,76-76,76"/><path d="M144,52l76,76-76,76" opacity=".55"/></svg></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1815,6 +1828,7 @@
     if(current !== "s-qr" && current !== "s-qr-failed"){ state.qrFrom = current; }
     clearProcTimers();
     go("s-qr");
+    if(qrSlide){ qrSlide.reset(); qrSlide.hint(); }
     var delay = outcome === "failed" ? 4000 : 3000;
     state.procTimers.push(setTimeout(function(){
       if(outcome === "failed"){ go("s-qr-failed"); }
@@ -1979,59 +1993,54 @@
     bindSlideLogout();
   };
 
-  // Slide-to-log-out: destructive, touch-first (drag the handle to the end).
-  // No hover state is used — this is a handheld POS, not a pointer device.
-  function bindSlideLogout(){
-    var slide=document.getElementById("logoutSlide");
-    var thumb=document.getElementById("logoutThumb");
-    var label=document.getElementById("logoutLabel");
-    if(!slide||!thumb||!label) return;
+  // Reusable slide-to-confirm controller (log out, QR cancel). Touch-first,
+  // no hover state, with a one-off nudge so it reads as a swipe not a tap.
+  function makeSlide(slideId, opts){
+    var slide=document.getElementById(slideId);
+    if(!slide) return null;
+    var thumb=slide.querySelector(".slide__thumb");
+    var label=slide.querySelector(".slide__label");
     var track=slide.querySelector(".slide__track");
-    var dragging=false, startX=0, x=0, done=false;
+    if(!thumb||!label||!track) return null;
+    var baseLabel=label.textContent, dragging=false, startX=0, x=0, done=false;
     function maxTravel(){ return Math.max(0, track.clientWidth - thumb.offsetWidth - 8); }
     function paint(px){
       x=Math.max(0, Math.min(px, maxTravel()));
       thumb.style.transform="translateX("+x+"px)";
-      var p = maxTravel() ? x/maxTravel() : 0;
+      var m=maxTravel(), p=m?x/m:0;
       label.style.opacity=String(Math.max(0, 1 - p*1.5));
       track.style.setProperty("--fill",(x+thumb.offsetWidth+4)+"px");
     }
     function cx(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : e.clientX; }
-    function down(e){
-      if(done) return;
-      thumb.classList.remove("hint");
-      dragging=true; thumb.style.transition="none"; startX=cx(e)-x;
-      if(e.pointerId!=null&&thumb.setPointerCapture){ try{thumb.setPointerCapture(e.pointerId);}catch(_){} }
-    }
+    function down(e){ if(done) return; thumb.classList.remove("hint"); dragging=true; thumb.style.transition="none"; startX=cx(e)-x; if(e.pointerId!=null&&thumb.setPointerCapture){ try{thumb.setPointerCapture(e.pointerId);}catch(_){} } }
     function move(e){ if(!dragging) return; paint(cx(e)-startX); if(e.cancelable) e.preventDefault(); }
-    function up(){
-      if(!dragging) return;
-      dragging=false; thumb.style.transition="transform .25s var(--ease)";
-      if(x>=maxTravel()*0.9){ finish(); } else { paint(0); label.style.opacity="1"; }
-    }
-    function finish(){
-      done=true; slide.classList.add("is-done");
-      thumb.style.transition="transform .2s var(--ease)"; paint(maxTravel());
-      label.textContent="Logging out"; label.style.opacity="1";
-      setTimeout(function(){ closeSheet(true); toast("Logged out (demo)"); }, 480);
-    }
+    function up(){ if(!dragging) return; dragging=false; thumb.style.transition="transform .25s var(--ease)"; if(x>=maxTravel()*0.9){ finish(); } else { paint(0); label.style.opacity="1"; } }
+    function finish(){ if(done) return; done=true; slide.classList.add("is-done"); thumb.style.transition="transform .2s var(--ease)"; paint(maxTravel()); label.style.opacity="1"; if(opts.doneLabel) label.textContent=opts.doneLabel; setTimeout(function(){ opts.done(); }, 400); }
+    function reset(){ done=false; dragging=false; slide.classList.remove("is-done"); thumb.style.transition="none"; x=0; thumb.style.transform="translateX(0)"; label.style.opacity="1"; label.textContent=baseLabel; track.style.setProperty("--fill","0px"); }
+    function hint(){ setTimeout(function(){ if(!done && !dragging){ thumb.classList.add("hint"); } }, 480); }
     if(window.PointerEvent){
-      thumb.addEventListener("pointerdown",down);
-      thumb.addEventListener("pointermove",move);
-      thumb.addEventListener("pointerup",up);
-      thumb.addEventListener("pointercancel",up);
+      thumb.addEventListener("pointerdown",down); thumb.addEventListener("pointermove",move);
+      thumb.addEventListener("pointerup",up); thumb.addEventListener("pointercancel",up);
     } else {
-      thumb.addEventListener("touchstart",down,{passive:true});
-      thumb.addEventListener("touchmove",move,{passive:false});
-      thumb.addEventListener("touchend",up);
-      thumb.addEventListener("mousedown",down);
-      document.addEventListener("mousemove",move);
-      document.addEventListener("mouseup",up);
+      thumb.addEventListener("touchstart",down,{passive:true}); thumb.addEventListener("touchmove",move,{passive:false});
+      thumb.addEventListener("touchend",up); thumb.addEventListener("mousedown",down);
+      document.addEventListener("mousemove",move); document.addEventListener("mouseup",up);
     }
-    slide.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); finish(); } });
-    // subtle one-off hint so the waiter reads this as a swipe, not a tap
     thumb.addEventListener("animationend", function(){ thumb.classList.remove("hint"); });
-    setTimeout(function(){ if(!done && !dragging){ thumb.classList.add("hint"); } }, 500);
+    slide.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); finish(); } });
+    if(opts.autohint!==false){ hint(); }
+    return { reset:reset, hint:hint };
+  }
+  function bindSlideLogout(){
+    makeSlide("logoutSlide", { doneLabel:"Logging out", done:function(){ closeSheet(true); toast("Logged out (demo)"); } });
+  }
+  // QR cancel: a deliberate swipe cancels the code, then checks status, then
+  // lands on the safe method chooser. Never a plain tap (avoids a double charge).
+  var qrSlide = null;
+  function qrCancelDone(){
+    clearProcTimers();
+    go("s-reconciling");
+    state.procTimers.push(setTimeout(function(){ updateTotals(); go("s-notcharged"); }, 1600));
   }
 
   // ---------- Flow menu ----------
@@ -2113,6 +2122,7 @@
   renderTables();
   updateTotals();
   buildQR();
+  qrSlide = makeSlide("qrCancelSlide", { autohint:false, doneLabel:"Cancelling", done:qrCancelDone });
   // POS terminal: always default to light, ignore OS dark mode
   document.documentElement.setAttribute("data-theme","light");
   document.querySelector('[data-theme-opt="light"]').classList.add("is-on");
