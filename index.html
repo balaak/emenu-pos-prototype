@@ -813,6 +813,9 @@
   .mrow__ic svg{width:20px;height:20px;}
   .mrow b{font-size:14px;font-weight:600;}
   .mrow .tag{margin-left:auto;}
+  .qr-wait{display:flex;align-items:center;justify-content:center;gap:9px;font-size:14px;font-weight:600;color:var(--muted);padding:4px 0 2px;}
+  .qr-wait__dot{width:9px;height:9px;border-radius:50%;background:var(--pos);animation:qrpulse 1.2s var(--ease) infinite;}
+  @keyframes qrpulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
 
   /* =========================================================
      Starbucks JLT dashboard (merged) — navy hero + thumb-zone
@@ -1211,7 +1214,7 @@
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
             <b>Cash</b>
           </button>
-          <button class="mtile" onclick="go('s-qr')">
+          <button class="mtile" onclick="startQR()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
             <b>QR</b>
           </button>
@@ -1259,7 +1262,7 @@
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
             <b>Cash</b>
           </button>
-          <button class="mtile" onclick="go('s-qr')">
+          <button class="mtile" onclick="startQR()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
             <b>QR</b>
           </button>
@@ -1318,7 +1321,7 @@
     <!-- ============================= QR PAY ============================= -->
     <section class="screen" id="s-qr" aria-label="Scan to pay">
       <div class="appbar">
-        <button class="iconbtn" aria-label="Back to payment methods" onclick="go('s-payment','back')">
+        <button class="iconbtn" aria-label="Back to payment methods" onclick="cancelQR()">
           <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
         </button>
         <div>
@@ -1345,8 +1348,27 @@
       </div>
 
       <div class="actionbar">
-        <button class="btn btn--primary" onclick="qrReceived()">Mark Payment Received</button>
-        <button class="btn btn--ghost" onclick="go('s-payment','back')">Choose Another Method</button>
+        <div class="qr-wait"><span class="qr-wait__dot"></span>Waiting for the guest to pay</div>
+        <button class="btn btn--ghost" onclick="cancelQR()">Choose Another Method</button>
+      </div>
+    </section>
+
+    <!-- ============================= QR NOT COMPLETED ============================= -->
+    <section class="screen" id="s-qr-failed" aria-label="Scan to pay not completed">
+      <div class="result">
+        <div class="result__badge result__badge--warn">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"/></svg>
+        </div>
+        <h2>Payment Not Completed</h2>
+        <p>The guest did not finish the scan, or the code expired. Nothing was charged.</p>
+        <div class="reason">
+          <span class="reason__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
+          <div><b>Bill stays open</b><span>No payment came through, so it is safe to show the code again or take another method.</span></div>
+        </div>
+      </div>
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="startQR('success')">Show QR Again</button>
+        <button class="btn btn--secondary" onclick="go(qrReturn())">Choose Another Method</button>
       </div>
     </section>
 
@@ -1391,7 +1413,7 @@
       </div>
       <div class="actionbar">
         <button class="btn btn--primary" onclick="startProcessing('success')">Retry Card</button>
-        <button class="btn btn--secondary" onclick="go('s-qr')">Pay by QR Instead</button>
+        <button class="btn btn--secondary" onclick="startQR()">Pay by QR Instead</button>
         <button class="btn btn--ghost" onclick="go('s-payment')">Choose Another Method</button>
       </div>
     </section>
@@ -1410,7 +1432,25 @@
         </div>
       </div>
       <div class="actionbar">
-        <button class="btn btn--primary" onclick="reconcile('success')">Check Status and Resume</button>
+        <button class="btn btn--primary" onclick="reconcile()">Check Status and Resume</button>
+      </div>
+    </section>
+
+    <!-- ============================= RECONCILING (checking status) ============================= -->
+    <section class="screen" id="s-reconciling" aria-label="Checking payment status">
+      <div class="appbar">
+        <div>
+          <div class="appbar__title">Checking Status</div>
+          <div class="appbar__sub">Table 12 . Check #2536</div>
+        </div>
+      </div>
+      <div class="proc">
+        <div class="proc__ring">
+          <svg viewBox="0 0 120 120"><circle class="proc__track" cx="60" cy="60" r="52"/><circle class="proc__arc" cx="60" cy="60" r="52"/></svg>
+          <span class="proc__lock"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/></svg></span>
+        </div>
+        <h2>Checking with the bank</h2>
+        <div class="proc__slow is-on">Please wait a moment. We are confirming whether the payment went through.</div>
       </div>
     </section>
 
@@ -1450,7 +1490,7 @@
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
             <b>Cash</b>
           </button>
-          <button class="mtile" onclick="go('s-qr')">
+          <button class="mtile" onclick="startQR()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
             <b>QR</b>
           </button>
@@ -1508,8 +1548,10 @@
     <div class="flow-links">
       <button class="wide" onclick="jump('s-declined')"><span class="n">A</span>Card Declined, Retry and QR Fallback</button>
       <button class="wide" onclick="jump('s-timeout')"><span class="n">B</span>Network Timeout, Resumable Payment</button>
-      <button class="wide" onclick="jumpSuccess()"><span class="n">C</span>Reconcile, Charge Found (Success)</button>
-      <button class="wide" onclick="jump('s-notcharged')"><span class="n">D</span>Reconcile, Not Charged (Choose Method)</button>
+      <button class="wide" onclick="reconcileDemo('success')"><span class="n">C</span>Timeout, Reconcile Charge Found</button>
+      <button class="wide" onclick="reconcileDemo('notcharged')"><span class="n">D</span>Timeout, Reconcile Not Charged</button>
+      <button class="wide" onclick="jumpQR('success')"><span class="n">E</span>Scan to Pay, Guest Pays (Success)</button>
+      <button class="wide" onclick="jumpQR('failed')"><span class="n">F</span>Scan to Pay, Not Completed</button>
     </div>
 
     <div class="flow-label">Edge States</div>
@@ -1551,7 +1593,7 @@
 
   // ---------- Money ----------
   var BILL = 462.00; // subtotal 400 + service 40 + VAT 22
-  var state = { tip:0, tipMode:"none", method:"Card", outcome:"success", guest:false, procTimers:[] };
+  var state = { tip:0, tipMode:"none", method:"Card", outcome:"success", reconcileOutcome:"success", qrFrom:null, guest:false, procTimers:[] };
 
   function fmt(n){ return n.toLocaleString("en-AE",{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function grand(){ return BILL + state.tip; }
@@ -1767,26 +1809,41 @@
     fireCheck();
   };
 
-  // ---------- QR ----------
-  window.qrReceived = function(){
+  // ---------- QR (guest-driven, auto-resolves on the provider's confirmation) ----------
+  window.qrReturn = function(){ return state.qrFrom || "s-payment"; };
+  window.startQR = function(outcome){
     state.method = "QR";
     document.getElementById("successMethod").textContent = "QR";
-    go("s-success");
-    fireCheck();
+    if(current !== "s-qr" && current !== "s-qr-failed"){ state.qrFrom = current; }
+    clearProcTimers();
+    go("s-qr");
+    var delay = outcome === "failed" ? 4000 : 3000;
+    state.procTimers.push(setTimeout(function(){
+      if(outcome === "failed"){ go("s-qr-failed"); }
+      else { go("s-success"); fireCheck(); }
+    }, delay));
+  };
+  // Choosing another method cancels the code first so a late scan cannot land
+  window.cancelQR = function(){
+    clearProcTimers();
+    go(qrReturn(), "back");
   };
 
   // ---------- Reconcile after an uncertain result ----------
   // From the uncertain state the ONLY safe exit is to resolve the unknown.
   // Check the bank first, then either close the bill (charged once) or, if
   // nothing was charged, open the safe method chooser.
-  window.reconcile = function(outcome){
-    toast("Checking status with the bank");
+  window.reconcile = function(){
+    var outcome = state.reconcileOutcome || "success";
     clearProcTimers();
+    go("s-reconciling");
     state.procTimers.push(setTimeout(function(){
       if(outcome === "notcharged"){ updateTotals(); go("s-notcharged"); }
       else { go("s-success"); fireCheck(); }
-    }, 900));
+    }, 1600));
   };
+  // Flow-menu drivers: start on the uncertain screen with the outcome pre-armed
+  window.reconcileDemo = function(o){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); state.reconcileOutcome = o; go("s-timeout"); };
 
   // ---------- Processing (guarded) ----------
   window.startProcessing = function(outcome){
@@ -1989,6 +2046,7 @@
   window.jump = function(id){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); go(id); };
   window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
+  window.jumpQR = function(o){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(o); };
   window.jumpNotFound = function(){
     closeFlow(true);
     go("s-find");
@@ -2002,7 +2060,7 @@
     clearProcTimers();
     scrim.classList.remove("is-on");
     closeFlow(true);
-    state.tip = 0; state.tipMode = "none"; state.method = "Card"; state.outcome="success"; state.guest=false;
+    state.tip = 0; state.tipMode = "none"; state.method = "Card"; state.outcome="success"; state.reconcileOutcome="success"; state.guest=false;
     document.querySelectorAll(".tipbtn").forEach(function(b){ b.classList.remove("is-on"); });
     var none = document.querySelector('.tipbtn[data-tip="none"]'); if(none) none.classList.add("is-on");
     document.getElementById("customTip").classList.remove("is-on");
