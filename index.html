@@ -1,0 +1,2010 @@
+<!doctype html><html data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Starbucks JLT POS Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+  /* ============================================================
+     eMenu Handheld POS - Table Settlement Prototype
+     Design tokens - light palette (bare :root)
+     ============================================================ */
+  :root{
+    --backdrop-1:#dfe6f0;
+    --backdrop-2:#eef2f7;
+    --bg:#eef2f7;
+    --app-bg:#f5f7fb;
+    --surface:#ffffff;
+    --surface-2:#f6f8fb;
+    --surface-3:#eef2f8;
+    --ink:#0b1f3a;
+    --ink-soft:#38465c;
+    --muted:#66748c;
+    --faint:#9aa7bb;
+    --line:#dce3ee;
+    --line-strong:#c6d1e0;
+
+    --brand:#1552cc;
+    --brand-press:#1043a8;
+    --brand-ink:#ffffff;
+    --brand-soft:#e7eefb;
+
+    --navy:#0b1f3a;
+
+    /* semantic status */
+    --pos:#0d8a5a;            /* open bill / payable - positive, not red */
+    --pos-strong:#0a7a4f;     /* ready to pay - strongest */
+    --pos-soft:#e2f4ec;
+    --pos-ink:#075437;
+
+    --warn:#b5730c;           /* payment in progress / locked - amber */
+    --warn-soft:#fbeed7;
+    --warn-ink:#7a4c05;
+
+    --info:#1552cc;           /* reserved */
+    --info-soft:#e7eefb;
+
+    --neutral:#5b6b82;        /* available - muted */
+    --neutral-soft:#eef1f6;
+
+    --danger:#c4222f;         /* genuine error only */
+    --danger-soft:#fbe6e8;
+    --danger-ink:#8f1922;
+
+    --shadow-sm:0 1px 2px rgba(11,31,58,.08);
+    --shadow:0 1px 2px rgba(11,31,58,.06),0 8px 24px rgba(11,31,58,.08);
+    --shadow-lg:0 24px 60px rgba(11,31,58,.28);
+    --sheet-shadow:0 -8px 40px rgba(11,31,58,.22);
+
+    --r-sm:10px;
+    --r:14px;
+    --r-lg:20px;
+    --r-xl:26px;
+
+    --dur:.34s;
+    --ease:cubic-bezier(.32,.72,.28,1);
+  }
+
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --backdrop-1:#0a1220;
+      --backdrop-2:#0d1626;
+      --bg:#0a1220;
+      --app-bg:#0c1524;
+      --surface:#111d33;
+      --surface-2:#0f1a2d;
+      --surface-3:#16233b;
+      --ink:#eaf1fb;
+      --ink-soft:#c4d0e2;
+      --muted:#8a99b1;
+      --faint:#63728a;
+      --line:#233350;
+      --line-strong:#2c3f60;
+
+      --brand:#4d84ff;
+      --brand-press:#3d70e6;
+      --brand-ink:#07101f;
+      --brand-soft:#16273f;
+
+      --navy:#0b1f3a;
+
+      --pos:#33c088;
+      --pos-strong:#4ad19a;
+      --pos-soft:#12281f;
+      --pos-ink:#7fe3b7;
+
+      --warn:#eca63f;
+      --warn-soft:#2a2114;
+      --warn-ink:#f4c680;
+
+      --info:#4d84ff;
+      --info-soft:#16273f;
+
+      --neutral:#8a99b1;
+      --neutral-soft:#18243a;
+
+      --danger:#ff6f7b;
+      --danger-soft:#2b1620;
+      --danger-ink:#ffb3ba;
+
+      --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
+      --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+      --sheet-shadow:0 -8px 40px rgba(0,0,0,.5);
+    }
+  }
+
+  :root[data-theme="dark"]{
+    --backdrop-1:#0a1220;
+    --backdrop-2:#0d1626;
+    --bg:#0a1220;
+    --app-bg:#0c1524;
+    --surface:#111d33;
+    --surface-2:#0f1a2d;
+    --surface-3:#16233b;
+    --ink:#eaf1fb;
+    --ink-soft:#c4d0e2;
+    --muted:#8a99b1;
+    --faint:#63728a;
+    --line:#233350;
+    --line-strong:#2c3f60;
+    --brand:#4d84ff;
+    --brand-press:#3d70e6;
+    --brand-ink:#07101f;
+    --brand-soft:#16273f;
+    --navy:#0b1f3a;
+    --pos:#33c088;
+    --pos-strong:#4ad19a;
+    --pos-soft:#12281f;
+    --pos-ink:#7fe3b7;
+    --warn:#eca63f;
+    --warn-soft:#2a2114;
+    --warn-ink:#f4c680;
+    --info:#4d84ff;
+    --info-soft:#16273f;
+    --neutral:#8a99b1;
+    --neutral-soft:#18243a;
+    --danger:#ff6f7b;
+    --danger-soft:#2b1620;
+    --danger-ink:#ffb3ba;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
+    --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+    --sheet-shadow:0 -8px 40px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 700px at 15% -10%, var(--backdrop-1), transparent 60%),
+      radial-gradient(1000px 800px at 110% 110%, var(--backdrop-1), transparent 55%),
+      var(--backdrop-2);
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    padding:20px;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ===================== Device frame ===================== */
+  .device{
+    position:relative;
+    width:min(400px,100vw);
+    height:min(858px, calc(100vh - 40px));
+    background:var(--app-bg);
+    border-radius:44px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-lg), 0 0 0 10px #0b1220 inset;
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    isolation:isolate;
+  }
+  .device__bezel{
+    position:absolute;inset:0;
+    border-radius:44px;
+    box-shadow:inset 0 0 0 2px rgba(11,31,58,.10), inset 0 0 0 8px var(--app-bg);
+    pointer-events:none;z-index:60;
+  }
+
+  /* OS status bar (shared) */
+  .osbar{
+    height:34px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 26px 0;
+    font-size:13px;font-weight:600;color:var(--ink);
+    letter-spacing:.02em;z-index:20;
+  }
+  .osbar__right{display:flex;align-items:center;gap:6px;}
+  .osbar svg{display:block;}
+
+  /* Viewport holds stacked screens */
+  .viewport{position:relative;flex:1 1 auto;overflow:hidden;}
+
+  /* ===================== Screen system ===================== */
+  .screen{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    background:var(--app-bg);
+    opacity:0;visibility:hidden;
+    transform:translateX(14px) scale(.995);
+    transition:opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+    pointer-events:none;
+  }
+  .screen.is-active{opacity:1;visibility:visible;transform:none;pointer-events:auto;z-index:2;}
+  .screen.is-exit-left{transform:translateX(-14px) scale(.995);opacity:0;z-index:1;}
+
+  .screen__body{
+    flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    padding:0 18px 18px;
+  }
+  .screen__body::-webkit-scrollbar{width:0;}
+
+  /* App header */
+  .appbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;gap:10px;
+    padding:8px 14px 10px;
+    min-height:56px;
+  }
+  .appbar__title{font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.1;}
+  .appbar__sub{font-size:12.5px;font-weight:500;color:var(--muted);margin-top:1px;}
+  .appbar__spacer{flex:1 1 auto;}
+
+  .iconbtn{
+    width:44px;height:44px;flex:0 0 auto;
+    display:grid;place-items:center;
+    border:none;background:transparent;color:var(--ink);
+    border-radius:12px;cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .iconbtn:active{transform:scale(.92);}
+  .iconbtn svg{width:23px;height:23px;}
+
+  /* Footer / thumb action zone */
+  .actionbar{
+    flex:0 0 auto;
+    padding:14px 18px calc(16px + env(safe-area-inset-bottom,0px));
+    background:var(--surface);
+    border-radius:22px 22px 0 0;
+    box-shadow:0 -6px 22px rgba(11,31,58,.10);
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .homebar{
+    height:5px;width:120px;border-radius:3px;background:var(--line-strong);
+    margin:6px auto 2px;opacity:.7;
+  }
+
+  /* ===================== Buttons ===================== */
+  .btn{
+    appearance:none;border:none;cursor:pointer;
+    font-family:inherit;font-size:16px;font-weight:600;
+    border-radius:16px;min-height:54px;padding:0 20px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:transform .1s var(--ease), background .18s ease, box-shadow .18s ease, opacity .18s ease;
+    width:100%;line-height:1.1;color:var(--ink);background:var(--surface);
+  }
+  .btn svg{width:20px;height:20px;flex:0 0 auto;}
+  .btn:active{transform:translateY(1px) scale(.99);}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+  .btn--primary{background:var(--brand);color:var(--brand-ink);box-shadow:0 6px 18px -6px var(--brand);}
+  .btn--secondary{background:var(--surface);color:var(--ink);border:1.5px solid var(--line-strong);box-shadow:var(--shadow-sm);}
+  .btn--ghost{background:transparent;color:var(--brand);min-height:48px;font-weight:600;}
+  .btn--danger{background:var(--danger);color:#fff;}
+  .btn--inert{position:relative;}
+  .btn--inert::after{content:"Out of scope";position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:var(--faint);}
+  .btn--sm{min-height:46px;font-size:14.5px;border-radius:13px;}
+  .btn__amt{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;}
+
+  :focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px;}
+
+  /* ===================== Reusable pieces ===================== */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);}
+  .section-label{font-size:12.5px;font-weight:700;letter-spacing:.01em;color:var(--muted);margin:18px 4px 8px;}
+  .amt{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
+  .muted{color:var(--muted);}
+
+  /* Status pill: label + dot + icon + color (never color alone) */
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12px;font-weight:700;line-height:1;
+    padding:5px 10px 5px 8px;border-radius:999px;white-space:nowrap;
+    border:1px solid transparent;
+  }
+  .pill .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .pill svg{width:13px;height:13px;}
+  .pill--ready{background:var(--pos-soft);color:var(--pos-ink);border-color:color-mix(in srgb,var(--pos) 30%,transparent);}
+  .pill--ready .dot{background:var(--pos-strong);}
+  .pill--open{background:var(--pos-soft);color:var(--pos-ink);border-color:color-mix(in srgb,var(--pos) 24%,transparent);}
+  .pill--open .dot{background:var(--pos);}
+  .pill--available{background:var(--neutral-soft);color:var(--muted);border-color:var(--line-strong);}
+  .pill--available .dot{background:var(--neutral);}
+  .pill--locked{background:var(--warn-soft);color:var(--warn-ink);border-color:color-mix(in srgb,var(--warn) 32%,transparent);}
+  .pill--locked .dot{background:var(--warn);}
+  .pill--info{background:var(--info-soft);color:var(--info);border-color:color-mix(in srgb,var(--info) 24%,transparent);}
+  .pill--info .dot{background:var(--info);}
+
+  /* ===================== Dashboard =====================
+     POS terminal (Stripe S700 class): held or on a stand, one-handed,
+     no pointer so NO hover states. Actions anchored to the bottom thumb
+     zone; information sits up top where reach does not matter. */
+  #s-dashboard .screen__body{display:flex;flex-direction:column;padding-bottom:20px;}
+  .dash-greet{padding:2px 4px;}
+  .dash-greet h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0;}
+  .dash-greet p{margin:3px 0 0;font-size:13.5px;color:var(--muted);font-weight:500;}
+
+  /* Status shortcut, glanceable, sits near the top */
+  .settle-hint{
+    margin:6px 0 0;width:100%;text-align:left;
+    display:flex;align-items:center;gap:12px;cursor:pointer;
+    background:var(--pos-soft);border:1px solid color-mix(in srgb,var(--pos) 28%,transparent);
+    border-radius:var(--r-lg);padding:15px 16px;color:var(--pos-ink);
+    transition:transform .12s var(--ease);
+  }
+  .settle-hint:active{transform:scale(.99);}
+  .settle-hint__ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,var(--pos) 16%,transparent);color:var(--pos-strong);flex:0 0 auto;}
+  .settle-hint__ic svg{width:25px;height:25px;}
+  .settle-hint b{font-size:15.5px;font-weight:700;display:block;line-height:1.15;}
+  .settle-hint span{font-size:12.5px;font-weight:500;opacity:.85;}
+  .settle-hint__go{margin-left:auto;color:var(--pos-strong);}
+  .settle-hint__go svg{width:22px;height:22px;}
+
+  /* Bottom-anchored action zone, the thumb sweet spot */
+  .dash-actions{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:22px;}
+  .dash-actions__label{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 2px 0;}
+
+  .tile{
+    text-align:left;cursor:pointer;border:1px solid var(--line);color:var(--ink);
+    background:var(--surface);border-radius:var(--r-lg);padding:16px;
+    display:flex;flex-direction:column;min-height:132px;box-shadow:var(--shadow-sm);
+    transition:transform .12s var(--ease);position:relative;
+  }
+  .tile:active{transform:translateY(1px) scale(.99);}
+  .tile__ic{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin-bottom:auto;background:var(--surface-3);color:var(--ink);}
+  .tile__ic svg{width:28px;height:28px;}
+  .tile h3{font-size:17px;font-weight:700;margin:14px 0 3px;letter-spacing:-.01em;}
+  .tile p{font-size:12px;color:var(--muted);margin:0;font-weight:500;line-height:1.3;}
+  .tile__tag{position:absolute;top:13px;right:14px;font-size:10.5px;font-weight:700;color:var(--faint);}
+
+  /* Primary pair: the two most-used actions, largest targets, lowest on screen */
+  .prime-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .tile--prime{min-height:152px;}
+  .tile--order .tile__ic{background:var(--navy);color:#fff;}
+  :root[data-theme="dark"] .tile--order .tile__ic,
+  :root:not([data-theme="light"]) .tile--order .tile__ic{background:var(--surface-3);color:var(--ink);}
+  .tile--accent{border-color:color-mix(in srgb,var(--brand) 46%,transparent);background:var(--brand-soft);}
+  .tile--accent .tile__ic{background:var(--brand);color:#fff;}
+  .tile--accent h3{color:var(--ink);}
+  .tile--accent p{color:color-mix(in srgb,var(--ink) 62%,transparent);}
+
+  /* Direct Sale: occasional, slim secondary above the pair */
+  .tile--wide{min-height:0;flex-direction:row;align-items:center;gap:14px;padding:14px 16px;}
+  .tile--wide .tile__ic{margin:0;width:46px;height:46px;}
+  .tile--wide h3{margin:0;font-size:15px;}
+  .tile--wide p{margin:1px 0 0;}
+  .tile--wide .tile__txt{display:flex;flex-direction:column;}
+  .tile__ic--bolt{background:var(--warn-soft);color:var(--warn);}
+
+  /* ===================== Find Table ===================== */
+  .search{
+    position:relative;margin:2px 0 4px;
+  }
+  .search input{
+    width:100%;height:52px;border-radius:15px;border:1.5px solid var(--line-strong);
+    background:var(--surface);color:var(--ink);font-family:inherit;font-size:16px;font-weight:600;
+    padding:0 48px 0 46px;outline:none;transition:border-color .16s ease, box-shadow .16s ease;
+  }
+  .search input::placeholder{color:var(--faint);font-weight:500;}
+  .search input:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);}
+  .search__ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+  .search__ic svg{width:20px;height:20px;}
+  .search__clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);}
+
+  .filters{display:flex;gap:8px;margin:12px 0 6px;overflow-x:auto;padding-bottom:2px;}
+  .filters::-webkit-scrollbar{height:0;}
+  .chip{
+    flex:0 0 auto;border:1.5px solid var(--line-strong);background:var(--surface);
+    color:var(--ink-soft);font-size:13px;font-weight:600;font-family:inherit;
+    padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;
+    transition:all .15s ease;display:inline-flex;align-items:center;gap:7px;
+  }
+  .chip .dot{width:7px;height:7px;border-radius:50%;}
+  .chip.is-on{background:var(--ink);color:var(--app-bg);border-color:var(--ink);}
+  :root[data-theme="dark"] .chip.is-on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]) .chip.is-on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);}
+  }
+
+  .tables{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+  .ttile{
+    text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    border-radius:var(--r);padding:13px 13px 14px;display:flex;flex-direction:column;gap:8px;
+    min-height:118px;box-shadow:var(--shadow-sm);
+    transition:transform .12s var(--ease), box-shadow .18s ease, border-color .16s ease;
+  }
+  .ttile:active{transform:translateY(1px) scale(.99);}
+  .ttile__top{display:flex;align-items:baseline;justify-content:space-between;gap:6px;}
+  .ttile__no{font-size:19px;font-weight:800;letter-spacing:-.02em;}
+  .ttile__no small{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-right:3px;}
+  .ttile__seats{font-size:11.5px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:3px;}
+  .ttile__seats svg{width:13px;height:13px;}
+  .ttile__meta{margin-top:auto;font-size:12px;color:var(--muted);font-weight:500;line-height:1.3;}
+  .ttile__meta b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
+  .ttile--payable{border-color:color-mix(in srgb,var(--pos) 24%,transparent);}
+  .ttile--locked{opacity:.9;}
+
+  .empty{
+    text-align:center;padding:40px 24px;display:none;flex-direction:column;align-items:center;gap:6px;
+  }
+  .empty.is-on{display:flex;}
+  .empty__ic{width:64px;height:64px;border-radius:18px;background:var(--surface-2);display:grid;place-items:center;color:var(--muted);margin-bottom:6px;}
+  .empty__ic svg{width:30px;height:30px;}
+  .empty h3{margin:0;font-size:17px;font-weight:700;}
+  .empty p{margin:0;font-size:13.5px;color:var(--muted);max-width:250px;line-height:1.45;}
+
+  /* ===================== Bill / verification ===================== */
+  .verify{
+    display:flex;align-items:center;gap:12px;padding:14px 16px;margin:2px 0 0;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);
+  }
+  .verify__no{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+  .verify__no small{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;margin-bottom:3px;}
+  .verify__div{width:1px;align-self:stretch;background:var(--line);margin:2px 2px;}
+  .verify__meta{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.5;}
+  .verify__meta b{color:var(--ink);font-weight:700;}
+  .verify__pill{margin-left:auto;align-self:flex-start;}
+
+  .items{margin-top:6px;}
+  .item{
+    display:flex;gap:12px;align-items:flex-start;padding:14px 4px;border-bottom:1px solid var(--line);
+  }
+  .item:last-child{border-bottom:none;}
+  .item__qty{
+    flex:0 0 auto;min-width:28px;height:24px;padding:0 7px;border-radius:8px;
+    background:var(--surface-3);color:var(--ink-soft);font-size:12.5px;font-weight:700;
+    display:grid;place-items:center;font-variant-numeric:tabular-nums;margin-top:1px;
+  }
+  .item__body{flex:1 1 auto;min-width:0;}
+  .item__name{font-size:14.5px;font-weight:600;line-height:1.25;}
+  .item__unit{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:3px;font-variant-numeric:tabular-nums;}
+  .item__tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+  .tag{font-size:10.5px;font-weight:700;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;letter-spacing:.01em;}
+  .item__price{flex:0 0 auto;font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+
+  .totals{padding:6px 4px 4px;}
+  .totals__row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px;color:var(--ink-soft);}
+  .totals__row span:last-child{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);}
+  .totals__row--muted{color:var(--muted);}
+  .totals__row--muted span:last-child{color:var(--ink-soft);font-weight:600;}
+  .totals__rule{height:1px;background:var(--line);margin:6px 0;}
+  .totals__total{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0 2px;}
+  .totals__total .k{font-size:15px;font-weight:700;color:var(--ink);}
+  .totals__total .v{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);}
+  .totals__total .v small{font-size:13px;font-weight:700;color:var(--muted);margin-right:5px;letter-spacing:0;}
+
+  .handoff{
+    display:flex;align-items:center;gap:11px;width:100%;cursor:pointer;text-align:left;
+    background:var(--brand-soft);border:1px dashed color-mix(in srgb,var(--brand) 40%,transparent);
+    border-radius:var(--r);padding:12px 14px;color:var(--brand);
+    transition:transform .12s var(--ease);
+  }
+  .handoff:active{transform:scale(.99);}
+  .handoff__ic{width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--brand) 16%,transparent);display:grid;place-items:center;flex:0 0 auto;}
+  .handoff__ic svg{width:19px;height:19px;}
+  .handoff b{font-size:13.5px;font-weight:700;display:block;line-height:1.2;color:var(--brand);}
+  .handoff span{font-size:11.5px;color:var(--ink-soft);font-weight:500;}
+  .handoff__go{margin-left:auto;color:var(--brand);}
+
+  /* ===================== Guest review + tip ===================== */
+  .guest-banner{
+    display:flex;align-items:center;gap:9px;padding:9px 14px;margin:2px 0 10px;
+    background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);
+    border-radius:12px;color:var(--warn-ink);font-size:12.5px;font-weight:600;
+  }
+  .guest-banner svg{width:16px;height:16px;flex:0 0 auto;}
+  .guest-banner button{margin-left:auto;background:none;border:none;color:var(--warn-ink);font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;text-decoration:underline;padding:4px;}
+
+  .tip-help{font-size:12.5px;color:var(--muted);font-weight:500;margin:2px 4px 12px;line-height:1.45;display:flex;gap:7px;align-items:flex-start;}
+  .tip-help svg{width:15px;height:15px;flex:0 0 auto;margin-top:1px;color:var(--pos);}
+  .tips{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .tipbtn{
+    cursor:pointer;border:1.5px solid var(--line-strong);background:var(--surface);
+    border-radius:14px;padding:14px 12px;text-align:center;font-family:inherit;
+    display:flex;flex-direction:column;gap:3px;align-items:center;min-height:64px;justify-content:center;
+    transition:all .15s var(--ease);color:var(--ink);
+  }
+  .tipbtn:active{transform:scale(.98);}
+  .tipbtn__pct{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+  .tipbtn__amt{font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .tipbtn.is-on{border-color:var(--brand);background:var(--brand-soft);}
+  .tipbtn.is-on .tipbtn__amt{color:var(--brand);}
+  .tipbtn--none .tipbtn__pct{font-size:14.5px;font-weight:700;}
+  .tipbtn--full{grid-column:1 / -1;flex-direction:row;justify-content:center;gap:8px;min-height:52px;}
+  .tipbtn--full svg{width:18px;height:18px;}
+
+  .custom-tip{display:none;margin-top:10px;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
+  .custom-tip.is-on{display:flex;}
+  .custom-tip label{font-size:13px;font-weight:700;color:var(--ink-soft);}
+  .custom-tip .field{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:11px;padding:0 12px;height:46px;}
+  .custom-tip .field:focus-within{border-color:var(--brand);}
+  .custom-tip .field span{font-size:13px;font-weight:700;color:var(--muted);}
+  .custom-tip input{width:78px;border:none;background:none;outline:none;font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
+
+  .grand{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:16px;padding:16px 18px;border-radius:var(--r-lg);
+    background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);
+  }
+  .grand .k{font-size:14px;font-weight:600;color:var(--muted);}
+  .grand .k small{display:block;font-size:12px;font-weight:600;color:var(--faint);margin-top:2px;}
+  .grand .v{font-size:30px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;line-height:1;}
+  .grand .v small{font-size:14px;font-weight:700;color:var(--muted);margin-right:6px;letter-spacing:0;}
+
+  /* ===================== Choose payment ===================== */
+  .pay-amount{
+    text-align:center;padding:22px 16px 18px;margin:6px 0 4px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);
+  }
+  .pay-amount .lbl{font-size:12.5px;font-weight:600;color:var(--muted);}
+  .pay-amount .val{font-size:34px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:4px;line-height:1;}
+  .pay-amount .val small{font-size:15px;font-weight:700;color:var(--muted);margin-right:6px;}
+  .pay-amount .sub{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500;}
+
+  .paymethod{
+    display:flex;align-items:center;gap:14px;width:100%;cursor:pointer;text-align:left;
+    background:var(--surface);border:1.5px solid var(--line-strong);border-radius:16px;
+    padding:16px;min-height:70px;color:var(--ink);
+    transition:transform .12s var(--ease), box-shadow .18s ease, border-color .16s ease;
+  }
+  .paymethod:active{transform:translateY(1px) scale(.995);}
+  .paymethod__ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;background:var(--surface-3);color:var(--ink);}
+  .paymethod__ic svg{width:24px;height:24px;}
+  .paymethod b{font-size:16px;font-weight:700;display:block;}
+  .paymethod span{font-size:12.5px;color:var(--muted);font-weight:500;}
+  .paymethod__go{margin-left:auto;color:var(--faint);}
+  .paymethod--card{border-color:var(--brand);background:var(--brand-soft);}
+  .paymethod--card .paymethod__ic{background:var(--brand);color:#fff;}
+  .paymethod--card b{color:var(--ink);}
+  .paymethod--card .paymethod__go{color:var(--brand);}
+
+  /* ===================== Processing ===================== */
+  .proc{
+    flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px 28px;gap:0;
+  }
+  .proc__ring{position:relative;width:140px;height:140px;margin-bottom:26px;}
+  .proc__ring svg{width:140px;height:140px;transform:rotate(-90deg);}
+  .proc__track{fill:none;stroke:var(--line);stroke-width:8;}
+  .proc__arc{fill:none;stroke:var(--brand);stroke-width:8;stroke-linecap:round;stroke-dasharray:170 400;animation:spin 1.15s linear infinite;transform-origin:center;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .proc__lock{position:absolute;inset:0;display:grid;place-items:center;color:var(--brand);}
+  .proc__lock svg{width:42px;height:42px;transform:none;animation:pulse 1.6s var(--ease) infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.72;transform:scale(.94);}}
+  .proc h2{font-size:21px;font-weight:700;margin:0 0 8px;letter-spacing:-.01em;}
+  .proc__keep{
+    font-size:16px;font-weight:700;color:var(--ink);background:var(--warn-soft);
+    border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);color:var(--warn-ink);
+    padding:11px 18px;border-radius:13px;display:inline-flex;align-items:center;gap:8px;margin:2px 0 18px;
+  }
+  .proc__keep svg{width:19px;height:19px;}
+  .proc__slow{font-size:13px;color:var(--muted);font-weight:500;max-width:260px;line-height:1.45;opacity:0;transition:opacity .4s ease;min-height:38px;}
+  .proc__slow.is-on{opacity:1;}
+  .proc__ctx{
+    margin-top:26px;padding-top:18px;border-top:1px solid var(--line);width:100%;max-width:280px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .proc__amt{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+  .proc__amt small{font-size:13px;font-weight:700;color:var(--muted);margin-right:5px;}
+  .proc__sec{font-size:12px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .proc__sec svg{width:14px;height:14px;color:var(--pos);}
+  .proc__txn{font-size:11px;color:var(--faint);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+  .proc__guard{font-size:11.5px;color:var(--faint);font-weight:500;margin-top:14px;display:inline-flex;align-items:center;gap:6px;}
+  .proc__guard svg{width:14px;height:14px;}
+
+  /* ===================== Result screens (success / error) ===================== */
+  .result{
+    flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px 28px;
+  }
+  .result__badge{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;margin-bottom:24px;position:relative;}
+  .result__badge svg{width:56px;height:56px;}
+  .result__badge--ok{background:var(--pos-soft);color:var(--pos-strong);}
+  .result__badge--ok::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--pos-soft);animation:ring-pop .6s var(--ease) both;}
+  @keyframes ring-pop{0%{transform:scale(.6);opacity:0;}60%{opacity:1;}100%{transform:scale(1);opacity:0;}}
+  .result__badge--warn{background:var(--warn-soft);color:var(--warn);}
+  .result__badge--err{background:var(--danger-soft);color:var(--danger);}
+  .check-path{stroke-dasharray:48;stroke-dashoffset:48;animation:draw .5s var(--ease) .15s forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .result h2{font-size:23px;font-weight:800;margin:0 0 8px;letter-spacing:-.02em;}
+  .result p{font-size:14px;color:var(--muted);font-weight:500;margin:0;max-width:280px;line-height:1.5;}
+  .result__amount{margin:20px 0 4px;font-size:38px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+  .result__amount small{font-size:16px;font-weight:700;color:var(--muted);margin-right:7px;}
+  .result__facts{
+    display:flex;gap:0;margin:16px 0 4px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);overflow:hidden;width:100%;max-width:300px;box-shadow:var(--shadow-sm);
+  }
+  .result__fact{flex:1 1 0;padding:12px 8px;display:flex;flex-direction:column;gap:3px;}
+  .result__fact + .result__fact{border-left:1px solid var(--line);}
+  .result__fact .k{font-size:11px;color:var(--muted);font-weight:600;}
+  .result__fact .v{font-size:14px;font-weight:700;color:var(--ink);}
+  .receipts{display:flex;gap:8px;margin-top:22px;width:100%;max-width:320px;}
+  .receipts .btn{flex:1 1 0;padding:0 8px;font-size:13px;}
+  .receipts .btn svg{width:18px;height:18px;}
+
+  /* Reason chips for errors */
+  .reason{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;margin:18px 0 4px;
+    width:100%;max-width:320px;box-shadow:var(--shadow-sm);
+  }
+  .reason__ic{color:var(--muted);flex:0 0 auto;margin-top:1px;}
+  .reason__ic svg{width:18px;height:18px;}
+  .reason b{font-size:13.5px;font-weight:700;display:block;margin-bottom:2px;}
+  .reason span{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.45;}
+
+  /* ===================== Bottom sheets ===================== */
+  .scrim{
+    position:absolute;inset:0;z-index:40;background:rgba(11,20,35,.5);
+    opacity:0;visibility:hidden;transition:opacity .28s ease, visibility .28s ease;
+    display:flex;align-items:flex-end;
+  }
+  .scrim.is-on{opacity:1;visibility:visible;}
+  .sheet{
+    width:100%;background:var(--surface);border-radius:26px 26px 0 0;
+    box-shadow:var(--sheet-shadow);padding:10px 22px calc(24px + env(safe-area-inset-bottom,0px));
+    transform:translateY(100%);transition:transform .34s var(--ease);
+  }
+  .scrim.is-on .sheet{transform:translateY(0);}
+  .sheet__grab{width:40px;height:4px;border-radius:3px;background:var(--line-strong);margin:0 auto 16px;}
+  .sheet__ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;margin:2px auto 14px;}
+  .sheet__ic svg{width:28px;height:28px;}
+  .sheet__ic--warn{background:var(--warn-soft);color:var(--warn);}
+  .sheet__ic--neutral{background:var(--surface-3);color:var(--muted);}
+  .sheet h3{text-align:center;font-size:19px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em;}
+  .sheet p{text-align:center;font-size:13.5px;color:var(--muted);font-weight:500;margin:0 auto 18px;max-width:290px;line-height:1.5;}
+  .sheet__actions{display:flex;flex-direction:column;gap:10px;}
+
+  /* ===================== Flow menu (reviewer tool) ===================== */
+  .flowfab{
+    position:fixed;right:20px;bottom:20px;z-index:200;
+    display:inline-flex;align-items:center;gap:8px;
+    height:46px;padding:0 16px 0 13px;border-radius:999px;cursor:pointer;
+    background:var(--navy);color:#fff;border:1px solid rgba(255,255,255,.12);
+    font-family:inherit;font-size:13.5px;font-weight:700;
+    box-shadow:0 10px 30px rgba(11,31,58,.4);
+    transition:transform .14s var(--ease), box-shadow .18s ease;
+  }
+  :root[data-theme="dark"] .flowfab{background:var(--brand);color:var(--brand-ink);}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]) .flowfab{background:var(--brand);color:var(--brand-ink);}
+  }
+  .flowfab:active{transform:scale(.96);}
+  .flowfab svg{width:18px;height:18px;}
+
+  .flowpanel{
+    position:fixed;inset:0;z-index:210;display:flex;align-items:center;justify-content:center;
+    padding:20px;background:rgba(6,12,22,.55);backdrop-filter:blur(3px);
+    opacity:0;visibility:hidden;transition:opacity .24s ease, visibility .24s ease;
+  }
+  .flowpanel.is-on{opacity:1;visibility:visible;}
+  .flowpanel__card{
+    width:min(360px,100%);max-height:88vh;overflow-y:auto;background:var(--surface);
+    border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow-lg);
+    padding:18px 18px 20px;transform:translateY(12px) scale(.98);transition:transform .26s var(--ease);
+  }
+  .flowpanel.is-on .flowpanel__card{transform:none;}
+  .flowpanel__head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .flowpanel__head h3{font-size:16px;font-weight:800;margin:0;letter-spacing:-.01em;}
+  .flowpanel__head p{font-size:11.5px;color:var(--muted);margin:2px 0 0;font-weight:500;}
+  .flowpanel__close{margin-left:auto;}
+  .flow-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin:16px 4px 8px;}
+  .flow-links{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .flow-links button{
+    font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--ink);
+    padding:11px 12px;border-radius:11px;transition:all .14s ease;line-height:1.2;
+    display:flex;align-items:center;gap:8px;
+  }
+  .flow-links button .n{width:18px;height:18px;border-radius:6px;background:var(--surface-3);display:grid;place-items:center;font-size:10.5px;font-weight:800;color:var(--muted);flex:0 0 auto;}
+  .flow-links button.wide{grid-column:1 / -1;}
+  .flow-links button.danger{color:var(--danger);}
+  .flow-links button.warnf{color:var(--warn-ink);}
+  .flow-theme{display:flex;gap:7px;margin-top:8px;}
+  .flow-theme button{flex:1 1 0;justify-content:center;}
+  .flow-theme button.is-on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);}
+
+  /* ===================== Toast ===================== */
+  .toast{
+    position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(16px);
+    z-index:100;background:var(--navy);color:#fff;font-size:13px;font-weight:600;
+    padding:11px 18px;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;
+    transition:opacity .26s ease, transform .26s var(--ease);max-width:80%;text-align:center;
+  }
+  :root[data-theme="dark"] .toast{background:var(--surface-3);border:1px solid var(--line);}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]) .toast{background:var(--surface-3);border:1px solid var(--line);}
+  }
+  .toast.is-on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ===================== Responsive ===================== */
+  @media (max-width:430px){
+    body{padding:0;}
+    .device{width:100vw;height:100vh;height:100dvh;border-radius:0;border:none;box-shadow:none;}
+    .device__bezel{display:none;}
+    .flowfab{right:14px;bottom:14px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+    .proc__arc{animation:none;stroke-dasharray:190 400;}
+    .proc__lock svg{animation:none;}
+    .screen{transform:none;}
+  }
+
+  /* ===================== Slide to log out (destructive, touch) ===================== */
+  .slide{user-select:none;-webkit-user-select:none;}
+  .slide__track{
+    position:relative;height:56px;border-radius:16px;overflow:hidden;
+    background:var(--danger-soft);
+    border:1.5px solid color-mix(in srgb,var(--danger) 42%,transparent);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .slide__track::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:var(--fill,0px);
+    background:color-mix(in srgb,var(--danger) 20%,transparent);z-index:0;
+  }
+  .slide__label{
+    position:relative;z-index:1;font-size:15px;font-weight:700;
+    color:var(--danger-ink);letter-spacing:.01em;pointer-events:none;
+  }
+  .slide__thumb{
+    position:absolute;left:4px;top:4px;height:48px;width:58px;z-index:2;
+    border-radius:12px;background:var(--danger);color:#fff;
+    display:grid;place-items:center;cursor:grab;touch-action:none;
+    box-shadow:0 3px 8px rgba(0,0,0,.18);will-change:transform;
+  }
+  .slide__thumb:active{cursor:grabbing;}
+  .slide__thumb svg{width:24px;height:24px;}
+  .slide.is-done .slide__track{background:var(--danger);border-color:var(--danger);}
+  .slide.is-done .slide__label{color:#fff;}
+  .slide.is-done .slide__thumb{background:#fff;color:var(--danger);}
+  @keyframes slidehint{0%,100%{transform:translateX(0);}42%{transform:translateX(13px);}72%{transform:translateX(0);}}
+  .slide__thumb.hint{animation:slidehint 1.05s var(--ease) 2;}
+
+  /* ===================== Flow stepper (Table / Review / Pay) ===================== */
+  .stepper{display:flex;gap:8px;padding:2px 18px 10px;flex:0 0 auto;}
+  .step{flex:1 1 0;display:flex;flex-direction:column;gap:6px;}
+  .step__bar{height:4px;border-radius:2px;background:var(--line-strong);transition:background .3s var(--ease);}
+  .step__lbl{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:.02em;transition:color .3s var(--ease);}
+  .step.is-done .step__bar{background:var(--pos);}
+  .step.is-active .step__bar{background:var(--brand);}
+  .step.is-active .step__lbl{color:var(--ink);font-weight:700;}
+
+  /* ===================== Find Table bottom bar (thumb zone) ===================== */
+  .findbar{
+    flex:0 0 auto;
+    padding:10px 18px calc(14px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(to top,var(--app-bg) 80%,transparent);
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .findbar .filters{margin:0;}
+  .findbar .search{margin:0;}
+
+  /* ===================== Inline payment methods (Pay Full + guest) ===================== */
+  .collect-line{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--muted);padding:2px 4px 10px;border-bottom:1px solid var(--line);}
+  .collect-amt{font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .methods-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .mtile{
+    cursor:pointer;border-radius:15px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;
+    min-height:90px;justify-content:center;transition:transform .1s var(--ease);box-shadow:var(--shadow);
+  }
+  .mtile:active{transform:translateY(1px) scale(.98);}
+  .mtile__ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--surface-3);color:var(--ink);}
+  .mtile__ic svg{width:22px;height:22px;}
+  .mtile b{font-size:13.5px;font-weight:700;}
+  .mtile--card{border-color:var(--brand);background:var(--brand);color:var(--brand-ink);box-shadow:0 6px 16px -6px var(--brand);}
+  .mtile--card b{color:var(--brand-ink);}
+  .mtile--card .mtile__ic{background:rgba(255,255,255,.22);color:var(--brand-ink);}
+  .bill-actions2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mother{
+    margin-top:10px;display:flex;align-items:center;gap:12px;width:100%;cursor:pointer;text-align:left;
+    background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:12px 14px;
+    color:var(--ink);font-family:inherit;transition:transform .1s var(--ease);box-shadow:var(--shadow);
+  }
+  .mother:active{transform:translateY(1px) scale(.99);}
+  .mother__ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--surface-3);color:var(--ink);flex:0 0 auto;}
+  .mother__ic svg{width:20px;height:20px;}
+  .mother__txt{display:flex;flex-direction:column;}
+  .mother__txt b{font-size:14px;font-weight:700;}
+  .mother__txt span{font-size:11.5px;color:var(--muted);font-weight:500;}
+  .mother__go{margin-left:auto;color:var(--faint);}
+  .mother__go svg{width:20px;height:20px;}
+  .method-list{display:flex;flex-direction:column;gap:8px;}
+  .mrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--ink);font-family:inherit;transition:transform .1s var(--ease);}
+  .mrow:active{transform:scale(.99);}
+  .mrow__ic{width:38px;height:38px;border-radius:10px;background:var(--surface-3);display:grid;place-items:center;flex:0 0 auto;color:var(--ink);}
+  .mrow__ic svg{width:20px;height:20px;}
+  .mrow b{font-size:14px;font-weight:600;}
+  .mrow .tag{margin-left:auto;}
+
+  /* =========================================================
+     Starbucks JLT dashboard (merged) — navy hero + thumb-zone
+     action cards with tint->white gradients (AA verified)
+     ========================================================= */
+  .osbar{transition:background var(--dur) var(--ease), color var(--dur) var(--ease);}
+  .device.is-hero .osbar{background:linear-gradient(158deg,#0f2d78,#1c50c2);color:#fff;}
+
+  #s-dashboard{background:var(--app-bg);}
+  .sbd-hero{background:linear-gradient(158deg,#0f2d78,#1c50c2);color:#fff;padding:6px 22px 42px;flex:0 0 auto;}
+  .sbd-hero__top{display:flex;align-items:flex-start;gap:12px;}
+  .sbd-hero__title{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.02;margin:0;}
+  .sbd-hero__sub{font-size:15.5px;font-weight:500;margin:7px 0 0;color:rgba(255,255,255,.86);}
+  .sbd-hero__menu{margin-left:auto;width:46px;height:46px;flex:0 0 auto;display:grid;place-items:center;border:none;background:transparent;color:#fff;border-radius:12px;cursor:pointer;transition:transform .1s ease;}
+  .sbd-hero__menu svg{width:27px;height:27px;}
+  .sbd-hero__menu:active{transform:scale(.92);}
+
+  .sbd-sheet{
+    flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+    background:var(--app-bg);border-radius:26px 26px 0 0;margin-top:-26px;
+    padding:16px 18px calc(18px + env(safe-area-inset-bottom,0px));
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .sbd-sheet::-webkit-scrollbar{width:0;}
+  .sbd-actions{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:12px;}
+
+  .sbd-settle{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;
+    background:#e4f4ea;border:1px solid #c4e3d1;border-radius:22px;padding:15px 16px;color:#0c5a38;
+    transition:transform .12s var(--ease);
+  }
+  .sbd-settle:active{transform:scale(.99);}
+  .sbd-settle__ic{width:48px;height:48px;border-radius:14px;flex:0 0 auto;display:grid;place-items:center;background:#4f9e76;color:#fff;}
+  .sbd-settle__ic svg{width:26px;height:26px;}
+  .sbd-settle b{font-size:16px;font-weight:700;display:block;line-height:1.15;}
+  .sbd-settle span{font-size:13px;font-weight:500;opacity:.9;}
+
+  .sbd-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sbd-tile{
+    text-align:left;cursor:pointer;border-radius:22px;padding:18px;display:flex;flex-direction:column;
+    border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-sm);transition:transform .12s var(--ease);
+  }
+  .sbd-tile:active{transform:translateY(1px) scale(.99);}
+  .sbd-tile__ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;margin-bottom:auto;}
+  .sbd-tile__ic svg{width:30px;height:30px;}
+  .sbd-tile h3{font-size:19px;font-weight:800;letter-spacing:-.01em;margin:16px 0 4px;color:var(--ink);}
+  .sbd-tile p{font-size:13.5px;color:#51607a;margin:0;font-weight:500;line-height:1.3;}
+  .sbd-tile--sq{min-height:150px;}
+  .sbd-tile--wide{min-height:132px;}
+
+  .sbd-pur{background:linear-gradient(180deg,#f4e9fb 0%,#fff 62%);border-color:#e2c9f0;}
+  .sbd-pur .sbd-tile__ic{background:#9a55cf;color:#fff;}
+  .sbd-amb{background:linear-gradient(180deg,#fdf1db 0%,#fff 62%);border-color:#f0d6a6;}
+  .sbd-amb .sbd-tile__ic{background:#e4ad46;color:#5c3f04;}
+  .sbd-ind{background:linear-gradient(180deg,#e9ecfb 0%,#fff 68%);border-color:#cbd2f2;}
+  .sbd-ind .sbd-tile__ic{background:#5b6bd6;color:#fff;}
+  .sbd-grn{background:linear-gradient(180deg,#e4f4ea 0%,#fff 68%);border-color:#c4e3d1;}
+  .sbd-grn .sbd-tile__ic{background:#4f9e76;color:#fff;}
+
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]) .sbd-settle{background:#12281f;border-color:#1f4536;color:#7fe3b7;}
+    :root:not([data-theme="light"]) .sbd-settle__ic{background:#2f6b4c;}
+    :root:not([data-theme="light"]) .sbd-tile p{color:var(--muted);}
+    :root:not([data-theme="light"]) .sbd-pur{background:linear-gradient(180deg,#221430 0%,var(--surface) 70%);border-color:#3d2a52;}
+    :root:not([data-theme="light"]) .sbd-amb{background:linear-gradient(180deg,#2a2114 0%,var(--surface) 70%);border-color:#4a3a1a;}
+    :root:not([data-theme="light"]) .sbd-ind{background:linear-gradient(180deg,#161d3a 0%,var(--surface) 74%);border-color:#2a3560;}
+    :root:not([data-theme="light"]) .sbd-grn{background:linear-gradient(180deg,#12281f 0%,var(--surface) 74%);border-color:#1f4536;}
+  }
+  :root[data-theme="dark"] .sbd-settle{background:#12281f;border-color:#1f4536;color:#7fe3b7;}
+  :root[data-theme="dark"] .sbd-settle__ic{background:#2f6b4c;}
+  :root[data-theme="dark"] .sbd-tile p{color:var(--muted);}
+  :root[data-theme="dark"] .sbd-pur{background:linear-gradient(180deg,#221430 0%,var(--surface) 70%);border-color:#3d2a52;}
+  :root[data-theme="dark"] .sbd-amb{background:linear-gradient(180deg,#2a2114 0%,var(--surface) 70%);border-color:#4a3a1a;}
+  :root[data-theme="dark"] .sbd-ind{background:linear-gradient(180deg,#161d3a 0%,var(--surface) 74%);border-color:#2a3560;}
+  :root[data-theme="dark"] .sbd-grn{background:linear-gradient(180deg,#12281f 0%,var(--surface) 74%);border-color:#1f4536;}
+</style>
+
+<!-- =================================================================
+     DEVICE
+================================================================= -->
+<div class="device" id="device">
+  <div class="device__bezel"></div>
+
+  <!-- OS status bar (shared) -->
+  <div class="osbar">
+    <span id="osclock">8:24</span>
+    <span class="osbar__right">
+      <!-- signal -->
+      <svg width="17" height="13" viewBox="0 0 18 13" fill="currentColor" aria-hidden="true"><rect x="0" y="9" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="7" rx="1"/><rect x="10" y="3" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="13" rx="1"/></svg>
+      <!-- wifi -->
+      <svg width="16" height="13" viewBox="0 0 16 13" fill="currentColor" aria-hidden="true"><path d="M8 12.5 5.6 9.9a3.3 3.3 0 0 1 4.8 0L8 12.5Zm4.2-4.6-1.4 1.5a5.6 5.6 0 0 0-7.6 0L1.8 7.9a7.7 7.7 0 0 1 10.4 0Zm2.3-2.5-1.4 1.5a9 9 0 0 0-12.2 0L-.5 5.4a11 11 0 0 1 15 0Z"/></svg>
+      <!-- battery -->
+      <svg width="26" height="13" viewBox="0 0 26 13" fill="none" aria-hidden="true"><rect x="1" y="1.5" width="21" height="10" rx="3" stroke="currentColor" stroke-opacity=".5"/><rect x="3" y="3.5" width="15" height="6" rx="1.5" fill="currentColor"/><rect x="23.5" y="4.5" width="1.8" height="4" rx="1" fill="currentColor" fill-opacity=".5"/></svg>
+    </span>
+  </div>
+
+  <div class="viewport" id="viewport">
+
+    <!-- ============================= DASHBOARD ============================= -->
+    <section class="screen is-active" id="s-dashboard" aria-label="Dashboard">
+      <!-- Navy hero blends with the (navy) OS status bar above it -->
+      <div class="sbd-hero">
+        <div class="sbd-hero__top">
+          <div>
+            <h1 class="sbd-hero__title">Starbucks JLT</h1>
+            <p class="sbd-hero__sub">Welcome back, David R!</p>
+          </div>
+          <button class="sbd-hero__menu" aria-label="Menu" onclick="openMenu()">
+            <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128ZM40,76H216a12,12,0,0,0,0-24H40a12,12,0,0,0,0,24ZM216,180H40a12,12,0,0,0,0,24H216a12,12,0,0,0,0-24Z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sbd-sheet">
+        <!-- Status glance, up top -->
+        <button class="sbd-settle" onclick="go('s-find')">
+          <span class="sbd-settle__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232.76,137.88A28.39,28.39,0,0,0,208.13,133L172,141.26c0-.42,0-.84,0-1.26a32,32,0,0,0-32-32H89.94a35.76,35.76,0,0,0-25.45,10.54L43,140H20A20,20,0,0,0,0,160v40a20,20,0,0,0,20,20H120a11.89,11.89,0,0,0,2.91-.36l64-16a11.4,11.4,0,0,0,1.79-.6l38.82-16.54c.23-.09.45-.19.67-.3a28.61,28.61,0,0,0,4.57-48.32ZM36,196H24V164H36Zm181.68-31.39-37.51,16L118.52,196H60V157l21.46-21.46A11.93,11.93,0,0,1,89.94,132H140a8,8,0,0,1,0,16H112a12,12,0,0,0,0,24h32a12.19,12.19,0,0,0,2.69-.3l67-15.41.47-.12a4.61,4.61,0,0,1,5.82,4.44A4.58,4.58,0,0,1,217.68,164.61ZM164,100a40.36,40.36,0,0,0,5.18-.34,40,40,0,1,0,29.67-59.32A40,40,0,1,0,164,100Zm40-36a16,16,0,1,1-16,16A16,16,0,0,1,204,64ZM164,44a16,16,0,0,1,12.94,6.58A39.9,39.9,0,0,0,164.2,76H164a16,16,0,0,1,0-32Z"/></svg></span>
+          <span>
+            <b>3 Tables Ready to Settle</b>
+            <span>Pull an open bill and collect payment</span>
+          </span>
+        </button>
+
+        <!-- Action cards anchored to the bottom thumb zone -->
+        <div class="sbd-actions">
+          <div class="sbd-pair">
+            <button class="sbd-tile sbd-tile--sq sbd-pur" onclick="toast('Scan QR is out of scope for this demo')">
+              <span class="sbd-tile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-96,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96Zm104-60H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,200,136Zm-4,60H160V160h36Z"/></svg></span>
+              <h3>Scan QR</h3>
+              <p>Guest, self pay</p>
+            </button>
+            <button class="sbd-tile sbd-tile--sq sbd-amb" onclick="toast('Direct Sale is out of scope for this demo')">
+              <span class="sbd-tile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M219.71,117.38a12,12,0,0,0-7.25-8.52L161.28,88.39l10.59-70.61a12,12,0,0,0-20.64-10l-112,120a12,12,0,0,0,4.31,19.33l51.18,20.47L84.13,238.22a12,12,0,0,0,20.64,10l112-120A12,12,0,0,0,219.71,117.38ZM113.6,203.55l6.27-41.77a12,12,0,0,0-7.41-12.92L68.74,131.37,142.4,52.45l-6.27,41.77a12,12,0,0,0,7.41,12.92l43.72,17.49Z"/></svg></span>
+              <h3>Direct sale</h3>
+              <p>Instant checkout</p>
+            </button>
+          </div>
+
+          <button class="sbd-tile sbd-tile--wide sbd-ind" onclick="toast('New Order is out of scope for this demo')">
+            <span class="sbd-tile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><rect x="32" y="60" width="150" height="20" rx="10"/><rect x="32" y="108" width="120" height="20" rx="10"/><rect x="32" y="156" width="88" height="20" rx="10"/><path d="M232,182a12,12,0,0,1-12,12H206v14a12,12,0,0,1-24,0V194H168a12,12,0,0,1,0-24h14V156a12,12,0,0,1,24,0v14h14A12,12,0,0,1,232,182Z"/></svg></span>
+            <h3>New Order</h3>
+            <p>Open a check, fire to the kitchen</p>
+          </button>
+
+          <button class="sbd-tile sbd-tile--wide sbd-grn" onclick="go('s-find')">
+            <span class="sbd-tile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M68,100A12,12,0,0,1,80,88h96a12,12,0,0,1,0,24H80A12,12,0,0,1,68,100Zm12,52h96a12,12,0,0,0,0-24H80a12,12,0,0,0,0,24ZM236,56V208a12,12,0,0,1-17.37,10.73L192,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L128,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L64,205.42,37.37,218.73A12,12,0,0,1,20,208V56A20,20,0,0,1,40,36H216A20,20,0,0,1,236,56Zm-24,4H44V188.58l14.63-7.31a12,12,0,0,1,10.74,0L96,194.58l26.63-13.31a12,12,0,0,1,10.74,0L160,194.58l26.63-13.31a12,12,0,0,1,10.74,0L212,188.58Z"/></svg></span>
+            <h3>Table Settlement</h3>
+            <p>Pull an open bill and collect payment</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= FIND TABLE ============================= -->
+    <section class="screen" id="s-find" aria-label="Find table">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back to dashboard" onclick="go('s-dashboard','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Find Table</div>
+          <div class="appbar__sub">Tap a table, or search the number</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 1 of 3: Table">
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <div class="tables" id="tablesGrid"></div>
+
+        <div class="empty" id="tablesEmpty">
+          <span class="empty__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/></svg></span>
+          <h3>Table Not Found</h3>
+          <p>No open table matches that number. Check the number with the guest, or browse all tables.</p>
+          <button class="btn btn--secondary btn--sm" style="width:auto;margin-top:10px" onclick="clearSearch();setFilter('all',document.querySelector('[data-filter=all]'))">Show All Tables</button>
+        </div>
+      </div>
+
+      <!-- Filters + search anchored to the bottom thumb zone -->
+      <div class="findbar">
+        <div class="filters" role="tablist" aria-label="Filter tables">
+          <button class="chip is-on" data-filter="ready" onclick="setFilter('ready',this)"><span class="dot" style="background:var(--pos-strong)"></span>Ready to Pay</button>
+          <button class="chip" data-filter="all" onclick="setFilter('all',this)">All Tables</button>
+        </div>
+        <div class="search">
+          <span class="search__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/></svg></span>
+          <input id="tableSearch" type="text" inputmode="numeric" autocomplete="off" placeholder="Search table number" aria-label="Search table number" oninput="filterTables()">
+          <button class="iconbtn search__clear" id="searchClear" aria-label="Clear search" style="display:none" onclick="clearSearch()">
+            <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= BILL / REVIEW ============================= -->
+    <section class="screen" id="s-bill" aria-label="Open bill">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back to tables" onclick="go('s-find','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Open Bill</div>
+          <div class="appbar__sub">Check the table before you collect</div>
+        </div>
+        <span class="appbar__spacer"></span>
+        <button class="iconbtn" aria-label="More options" onclick="toast('More options are out of scope for this demo')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M112,60a16,16,0,1,1,16,16A16,16,0,0,1,112,60Zm16,52a16,16,0,1,0,16,16A16,16,0,0,0,128,112Zm0,68a16,16,0,1,0,16,16A16,16,0,0,0,128,180Z"/></svg>
+        </button>
+      </div>
+
+      <div class="stepper" aria-label="Step 2 of 3: Review">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <!-- Verification info lives on the destination, no confirm modal -->
+        <div class="verify">
+          <div class="verify__no"><small>Table</small>12</div>
+          <div class="verify__div"></div>
+          <div class="verify__meta">
+            Check <b>#2536</b><br>
+            Server <b>David R.</b> . 6 Guests
+          </div>
+          <span class="pill pill--ready verify__pill"><span class="dot"></span>Ready to Pay</span>
+        </div>
+
+        <div class="section-label">Items . Read Only for Full Payment</div>
+        <div class="items">
+          <div class="item">
+            <span class="item__qty">1</span>
+            <div class="item__body">
+              <div class="item__name">Wagyu Ribeye 220g</div>
+              <div class="item__tags"><span class="tag">Med Rare</span></div>
+            </div>
+            <span class="item__price">180.00</span>
+          </div>
+          <div class="item">
+            <span class="item__qty">2</span>
+            <div class="item__body">
+              <div class="item__name">Grilled Halloumi Salad</div>
+              <div class="item__unit">AED 40.00 each</div>
+              <div class="item__tags"><span class="tag">Vegetarian</span><span class="tag">GF</span></div>
+            </div>
+            <span class="item__price">80.00</span>
+          </div>
+          <div class="item">
+            <span class="item__qty">1</span>
+            <div class="item__body">
+              <div class="item__name">Truffle Parmesan Fries</div>
+            </div>
+            <span class="item__price">35.00</span>
+          </div>
+          <div class="item">
+            <span class="item__qty">3</span>
+            <div class="item__body">
+              <div class="item__name">Fresh Orange Juice</div>
+              <div class="item__unit">AED 20.00 each</div>
+            </div>
+            <span class="item__price">60.00</span>
+          </div>
+          <div class="item">
+            <span class="item__qty">1</span>
+            <div class="item__body">
+              <div class="item__name">Baklava Platter</div>
+              <div class="item__tags"><span class="tag">Contains Nuts</span></div>
+            </div>
+            <span class="item__price">45.00</span>
+          </div>
+        </div>
+
+        <div class="section-label">Bill Total . AED</div>
+        <div class="card" style="padding:6px 16px 12px">
+          <div class="totals">
+            <div class="totals__row"><span>Subtotal</span><span>400.00</span></div>
+            <div class="totals__row totals__row--muted"><span>Service Charge (10%)</span><span>40.00</span></div>
+            <div class="totals__row totals__row--muted"><span>VAT (5%)</span><span>22.00</span></div>
+            <div class="totals__row" id="billTipRow" style="display:none"><span>Tip (from guest)</span><span id="billTipVal">0.00</span></div>
+            <div class="totals__rule"></div>
+            <div class="totals__total"><span class="k">Total</span><span class="v"><small>AED</small><span id="billTotalVal">462.00</span></span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="proceedPayFull()">
+          Pay Full <span class="btn__amt" id="billPayFullAmt">AED 462.00</span>
+        </button>
+        <div class="bill-actions2">
+          <button class="btn btn--secondary btn--sm" onclick="handToGuest()">
+            <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M188,84a32,32,0,0,0-8,1V60a32,32,0,0,0-43.21-30A32,32,0,0,0,76,44v1A32,32,0,0,0,36,76v76a92,92,0,0,0,184,0V116A32,32,0,0,0,188,84Zm8,68a68,68,0,0,1-136,0V76a8,8,0,0,1,16,0v40a12,12,0,0,0,24,0V44a8,8,0,0,1,16,0v64a12,12,0,0,0,24,0V60a8,8,0,0,1,16,0v65.4A52.09,52.09,0,0,0,116,176a12,12,0,0,0,24,0,28,28,0,0,1,28-28,12,12,0,0,0,12-12V116a8,8,0,0,1,16,0Z"/></svg>
+            Hand to Guest
+          </button>
+          <button class="btn btn--secondary btn--sm" onclick="toast('Split Bill is out of scope for this demo')">Split Bill</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= GUEST REVIEW + TIP ============================= -->
+    <section class="screen" id="s-guest" aria-label="Guest review and tip">
+      <div class="appbar">
+        <button class="iconbtn" id="guestBack" aria-label="Back to bill" onclick="go('s-bill','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Your Bill</div>
+          <div class="appbar__sub">Review, add a tip, then choose how to pay</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <div class="guest-banner" id="guestBanner" style="display:none">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg>
+          Handed to guest . Table 12
+          <button onclick="handBack()">Hand Back</button>
+        </div>
+
+        <div class="section-label">Items</div>
+        <div class="items">
+          <div class="item"><span class="item__qty">1</span><div class="item__body"><div class="item__name">Wagyu Ribeye 220g</div></div><span class="item__price">180.00</span></div>
+          <div class="item"><span class="item__qty">2</span><div class="item__body"><div class="item__name">Grilled Halloumi Salad</div><div class="item__unit">AED 40.00 each</div></div><span class="item__price">80.00</span></div>
+          <div class="item"><span class="item__qty">1</span><div class="item__body"><div class="item__name">Truffle Parmesan Fries</div></div><span class="item__price">35.00</span></div>
+          <div class="item"><span class="item__qty">3</span><div class="item__body"><div class="item__name">Fresh Orange Juice</div><div class="item__unit">AED 20.00 each</div></div><span class="item__price">60.00</span></div>
+          <div class="item"><span class="item__qty">1</span><div class="item__body"><div class="item__name">Baklava Platter</div></div><span class="item__price">45.00</span></div>
+        </div>
+
+        <div class="card" style="padding:6px 16px 12px;margin-top:10px">
+          <div class="totals">
+            <div class="totals__row"><span>Subtotal</span><span>400.00</span></div>
+            <div class="totals__row totals__row--muted"><span>Service Charge (10%)</span><span>40.00</span></div>
+            <div class="totals__row totals__row--muted"><span>VAT (5%)</span><span>22.00</span></div>
+          </div>
+        </div>
+
+        <div class="section-label">Add a Tip for David R.</div>
+        <p class="tip-help">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
+          A 10% service charge is already included. A tip is optional and goes to your server.
+        </p>
+        <div class="tips">
+          <button class="tipbtn is-on tipbtn--none" data-tip="none" onclick="selectTip('none',0,this)">
+            <span class="tipbtn__pct">No Tip</span>
+            <span class="tipbtn__amt">Thank you is enough</span>
+          </button>
+          <button class="tipbtn" data-tip="p10" onclick="selectTip('p10',40,this)">
+            <span class="tipbtn__pct">10%</span>
+            <span class="tipbtn__amt">AED 40.00</span>
+          </button>
+          <button class="tipbtn" data-tip="p15" onclick="selectTip('p15',60,this)">
+            <span class="tipbtn__pct">15%</span>
+            <span class="tipbtn__amt">AED 60.00</span>
+          </button>
+          <button class="tipbtn" data-tip="p20" onclick="selectTip('p20',80,this)">
+            <span class="tipbtn__pct">20%</span>
+            <span class="tipbtn__amt">AED 80.00</span>
+          </button>
+          <button class="tipbtn tipbtn--full" data-tip="custom" onclick="selectTip('custom',null,this)">
+            <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M230.14,70.54,185.46,25.85a20,20,0,0,0-28.29,0L33.86,149.17A19.85,19.85,0,0,0,28,163.31V208a20,20,0,0,0,20,20H92.69a19.86,19.86,0,0,0,14.14-5.86L230.14,98.82a20,20,0,0,0,0-28.28ZM91,204H52V165l84-84,39,39ZM192,103,153,64l18.34-18.34,39,39Z"/></svg>
+            Custom Amount
+          </button>
+        </div>
+        <div class="custom-tip" id="customTip">
+          <label for="customTipInput">Tip Amount</label>
+          <div class="field">
+            <span>AED</span>
+            <input id="customTipInput" type="number" inputmode="decimal" min="0" step="1" placeholder="0" value="" oninput="setCustomTip(this.value)">
+          </div>
+        </div>
+
+        <div class="grand">
+          <div class="k">Grand Total<small>Bill 462.00 + Tip <span id="grandTipNote">0.00</span></small></div>
+          <div class="v"><small>AED</small><span id="grandVal">462.00</span></div>
+        </div>
+      </div>
+
+      <div class="actionbar">
+        <div class="collect-line">Amount to collect<span class="collect-amt" id="continueAmt">AED 462.00</span></div>
+        <div class="methods-row">
+          <button class="mtile mtile--card" onclick="startProcessing()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
+            <b>Card</b>
+          </button>
+          <button class="mtile" onclick="payCash()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
+            <b>Cash</b>
+          </button>
+          <button class="mtile" onclick="go('s-qr')">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
+            <b>QR</b>
+          </button>
+        </div>
+        <button class="mother" onclick="openMethodsSheet()">
+          <span class="mother__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M156,128a28,28,0,1,1-28-28A28,28,0,0,1,156,128ZM48,100a28,28,0,1,0,28,28A28,28,0,0,0,48,100Zm160,0a28,28,0,1,0,28,28A28,28,0,0,0,208,100Z"/></svg></span>
+          <span class="mother__txt"><b>Other Methods</b><span>Apple Pay, wallet, gift card, room charge</span></span>
+          <span class="mother__go"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================= CHOOSE PAYMENT ============================= -->
+    <section class="screen" id="s-payment" aria-label="Choose payment method">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back to review" onclick="go('s-guest','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Choose Payment</div>
+          <div class="appbar__sub">Table 12 . Check #2536</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <div class="pay-amount">
+          <div class="lbl">Amount to Collect</div>
+          <div class="val"><small>AED</small><span id="payAmt">462.00</span></div>
+          <div class="sub" id="paySub">Includes service, VAT and tip</div>
+        </div>
+
+        <div class="section-label">Payment Method</div>
+        <div class="methods-row">
+          <button class="mtile mtile--card" onclick="startProcessing()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
+            <b>Card</b>
+          </button>
+          <button class="mtile" onclick="payCash()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
+            <b>Cash</b>
+          </button>
+          <button class="mtile" onclick="go('s-qr')">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
+            <b>QR</b>
+          </button>
+        </div>
+        <button class="mother" onclick="openMethodsSheet()">
+          <span class="mother__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M156,128a28,28,0,1,1-28-28A28,28,0,0,1,156,128ZM48,100a28,28,0,1,0,28,28A28,28,0,0,0,48,100Zm160,0a28,28,0,1,0,28,28A28,28,0,0,0,208,100Z"/></svg></span>
+          <span class="mother__txt"><b>Other Methods</b><span>Apple Pay, wallet, gift card, room charge</span></span>
+          <span class="mother__go"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================= PROCESSING ============================= -->
+    <section class="screen" id="s-processing" aria-label="Payment processing">
+      <div class="appbar">
+        <span class="iconbtn" aria-hidden="true" style="opacity:.35;cursor:default">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg>
+        </span>
+        <div>
+          <div class="appbar__title">Authorizing Payment</div>
+          <div class="appbar__sub">Table 12 . Server David R.</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="proc">
+        <div class="proc__ring">
+          <svg viewBox="0 0 120 120"><circle class="proc__track" cx="60" cy="60" r="52"/><circle class="proc__arc" cx="60" cy="60" r="52"/></svg>
+          <span class="proc__lock"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg></span>
+        </div>
+
+        <h2>Authorizing Charge</h2>
+        <div class="proc__keep">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg>
+          Keep the Card in Place
+        </div>
+        <div class="proc__slow" id="procSlow">Connection is slower than usual. This can take a few seconds. Please keep the card in place.</div>
+
+        <div class="proc__ctx">
+          <div class="proc__amt"><small>AED</small><span id="procAmt">462.00</span></div>
+          <div class="proc__sec"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,36H48A20,20,0,0,0,28,56v56c0,54.29,26.32,87.22,48.4,105.29,23.71,19.39,47.44,26,48.44,26.29a12.1,12.1,0,0,0,6.32,0c1-.28,24.73-6.9,48.44-26.29,22.08-18.07,48.4-51,48.4-105.29V56A20,20,0,0,0,208,36Zm-4,76c0,35.71-13.09,64.69-38.91,86.15A126.28,126.28,0,0,1,128,219.38a126.14,126.14,0,0,1-37.09-21.23C65.09,176.69,52,147.71,52,112V60H204ZM79.51,144.49a12,12,0,1,1,17-17L112,143l47.51-47.52a12,12,0,0,1,17,17l-56,56a12,12,0,0,1-17,0Z"/></svg>Secure Payment</div>
+          <div class="proc__txn">TXN-2026-341612</div>
+        </div>
+        <div class="proc__guard">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg>
+          Navigation is locked until this finishes
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= QR PAY ============================= -->
+    <section class="screen" id="s-qr" aria-label="Scan to pay">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back to payment methods" onclick="go('s-payment','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Scan to Pay</div>
+          <div class="appbar__sub">Show this to the guest</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:8px">
+        <div class="pay-amount" style="width:100%">
+          <div class="lbl">Amount to Collect</div>
+          <div class="val"><small>AED</small><span id="qrAmt">462.00</span></div>
+        </div>
+        <div style="background:#ffffff;border:1px solid var(--line);border-radius:20px;padding:18px;margin:20px 0 14px;box-shadow:var(--shadow-sm)">
+          <svg id="qrCode" width="196" height="196" viewBox="0 0 29 29" shape-rendering="crispEdges" aria-label="Payment QR code"><rect width="29" height="29" fill="#ffffff"/></svg>
+        </div>
+        <p class="muted" style="font-size:13px;font-weight:500;max-width:260px;line-height:1.5;margin:0 0 6px">The guest scans with their bank app or wallet. The amount is locked to this check.</p>
+      </div>
+
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="qrReceived()">Mark Payment Received</button>
+        <button class="btn btn--ghost" onclick="go('s-payment','back')">Choose Another Method</button>
+      </div>
+    </section>
+
+    <!-- ============================= SUCCESS ============================= -->
+    <section class="screen" id="s-success" aria-label="Payment successful">
+      <div class="result">
+        <div class="result__badge result__badge--ok">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="check-path" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2>Payment Successful</h2>
+        <p>The bill for Table 12 is settled and closed.</p>
+        <div class="result__amount"><small>AED</small><span id="successAmt">462.00</span></div>
+        <div class="result__facts">
+          <div class="result__fact"><span class="k">Table</span><span class="v">12</span></div>
+          <div class="result__fact"><span class="k">Method</span><span class="v" id="successMethod">Card</span></div>
+          <div class="result__fact"><span class="k">Check</span><span class="v">#2536</span></div>
+        </div>
+        <div class="receipts">
+          <button class="btn btn--secondary" onclick="toast('Receipt emailed to the guest')"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A12,12,0,0,0,20,56V192a20,20,0,0,0,20,20H216a20,20,0,0,0,20-20V56A12,12,0,0,0,224,44ZM193.15,68,128,127.72,62.85,68ZM44,188V83.28l75.89,69.57a12,12,0,0,0,16.22,0L212,83.28V188Z"/></svg>Email</button>
+          <button class="btn btn--secondary" onclick="toast('Sent to the receipt printer')"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M214.67,68H204V40a12,12,0,0,0-12-12H64A12,12,0,0,0,52,40V68H41.33C25.16,68,12,80.56,12,96v80a12,12,0,0,0,12,12H52v28a12,12,0,0,0,12,12H192a12,12,0,0,0,12-12V188h28a12,12,0,0,0,12-12V96C244,80.56,230.84,68,214.67,68ZM76,52H180V68H76ZM180,204H76V172H180Zm40-40H204v-4a12,12,0,0,0-12-12H64a12,12,0,0,0-12,12v4H36V96c0-2.17,2.44-4,5.33-4H214.67c2.89,0,5.33,1.83,5.33,4Zm-16-44a16,16,0,1,1-16-16A16,16,0,0,1,204,120Z"/></svg>Print</button>
+          <button class="btn btn--secondary" onclick="toast('Receipt sent by SMS')"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M120,128a16,16,0,1,1-16-16A16,16,0,0,1,120,128Zm32-16a16,16,0,1,0,16,16A16,16,0,0,0,152,112Zm84,16A108,108,0,0,1,78.77,224.15L46.34,235A20,20,0,0,1,21,209.66l10.81-32.43A108,108,0,1,1,236,128Zm-24,0A84,84,0,1,0,55.27,170.06a12,12,0,0,1,1,9.81l-9.93,29.79,29.79-9.93a12.1,12.1,0,0,1,3.8-.62,12,12,0,0,1,6,1.62A84,84,0,0,0,212,128Z"/></svg>SMS</button>
+        </div>
+      </div>
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="finishSuccess()">Done</button>
+        <button class="btn btn--ghost" onclick="finishSuccess()">Next Table</button>
+      </div>
+    </section>
+
+    <!-- ============================= CARD DECLINED ============================= -->
+    <section class="screen" id="s-declined" aria-label="Card declined">
+      <div class="result">
+        <div class="result__badge result__badge--err">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,104.49,145,128l23.52,23.51a12,12,0,0,1-17,17L128,145l-23.51,23.52a12,12,0,0,1-17-17L111,128,87.51,104.49a12,12,0,0,1,17-17L128,111l23.51-23.52a12,12,0,0,1,17,17ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"/></svg>
+        </div>
+        <h2>Card Declined</h2>
+        <p>The bank did not approve this card. Nothing has been charged. You can try again or use another method.</p>
+        <div class="reason">
+          <span class="reason__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
+          <div><b>Reason: Do Not Honour</b><span>Ask the guest for another card, or offer Scan to Pay. The bill stays open until payment succeeds.</span></div>
+        </div>
+      </div>
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="startProcessing('success')">Retry Card</button>
+        <button class="btn btn--secondary" onclick="go('s-qr')">Pay by QR Instead</button>
+        <button class="btn btn--ghost" onclick="go('s-payment')">Choose Another Method</button>
+      </div>
+    </section>
+
+    <!-- ============================= NETWORK TIMEOUT / UNCERTAIN ============================= -->
+    <section class="screen" id="s-timeout" aria-label="Payment status uncertain">
+      <div class="result">
+        <div class="result__badge result__badge--warn">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"/></svg>
+        </div>
+        <h2>Payment Status Uncertain</h2>
+        <p>The network dropped before the bank confirmed. We are not sure yet whether it went through.</p>
+        <div class="reason">
+          <span class="reason__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216.88,207.93a12,12,0,1,1-17.76,16.14L147.78,167.6a56.06,56.06,0,0,0-52.71,7.1,12,12,0,0,1-14.14-19.4,79.35,79.35,0,0,1,41.92-15.12L103.51,118.9a104.18,104.18,0,0,0-40.06,19.55,12,12,0,0,1-14.9-18.81A128.46,128.46,0,0,1,85.61,99.21l-17.31-19a151.14,151.14,0,0,0-36.68,22.28A12,12,0,1,1,16.39,83.91a175.52,175.52,0,0,1,35-22.38L39.12,48.07A12,12,0,1,1,56.88,31.93ZM128,188a16,16,0,1,0,16,16A16,16,0,0,0,128,188Zm64.55-49.55a12,12,0,0,0,14.9-18.81A127.27,127.27,0,0,0,170,99.05a12,12,0,0,0-7.87,22.67A103.62,103.62,0,0,1,192.55,138.45Zm47.06-54.54A176.33,176.33,0,0,0,128,44c-3.94,0-7.93.13-11.86.39a12,12,0,1,0,1.59,24c3.4-.23,6.86-.34,10.27-.34a152.24,152.24,0,0,1,96.38,34.46,12,12,0,1,0,15.23-18.55Z"/></svg></span>
+          <div><b>Safe to Resume</b><span>The bill stays open and the guest will not be charged twice. Check the status to continue where it stopped.</span></div>
+        </div>
+      </div>
+      <div class="actionbar">
+        <button class="btn btn--primary" onclick="startProcessing('success')">Check Status and Resume</button>
+        <button class="btn btn--secondary" onclick="go('s-payment')">Try a Different Method</button>
+      </div>
+    </section>
+
+    <!-- ============================= SCRIM + SHEETS ============================= -->
+    <div class="scrim" id="scrim" onclick="closeSheet(event)">
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+        <div class="sheet__grab"></div>
+        <div id="sheetContent"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div><!-- /viewport -->
+</div><!-- /device -->
+
+<!-- Flow menu (reviewer tool) -->
+<button class="flowfab" onclick="openFlow()" aria-label="Open flow menu">
+  <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-96,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96Zm104-60H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,200,136Zm-4,60H160V160h36Z"/></svg>
+  Flow
+</button>
+
+<div class="flowpanel" id="flowpanel" onclick="closeFlow(event)">
+  <div class="flowpanel__card" role="dialog" aria-modal="true" aria-label="Flow menu">
+    <div class="flowpanel__head">
+      <div>
+        <h3>Prototype Flow Menu</h3>
+        <p>Jump to any screen or trigger a recovery path</p>
+      </div>
+      <button class="iconbtn flowpanel__close" aria-label="Close" onclick="closeFlow(true)">
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></svg>
+      </button>
+    </div>
+
+    <div class="flow-label">Happy Path</div>
+    <div class="flow-links">
+      <button onclick="jump('s-dashboard')"><span class="n">1</span>Dashboard</button>
+      <button onclick="jump('s-find')"><span class="n">2</span>Find Table</button>
+      <button onclick="jump('s-bill')"><span class="n">3</span>Bill Review</button>
+      <button onclick="jump('s-guest')"><span class="n">4</span>Guest Tip</button>
+      <button onclick="jump('s-payment')"><span class="n">5</span>Payment</button>
+      <button onclick="jumpProc()"><span class="n">6</span>Processing</button>
+      <button onclick="jumpSuccess()"><span class="n">7</span>Success</button>
+    </div>
+
+    <div class="flow-label">Exception and Recovery</div>
+    <div class="flow-links">
+      <button class="wide" onclick="jump('s-declined')"><span class="n">A</span>Card Declined, Retry and QR Fallback</button>
+      <button class="wide" onclick="jump('s-timeout')"><span class="n">B</span>Network Timeout, Resumable Payment</button>
+    </div>
+
+    <div class="flow-label">Edge States</div>
+    <div class="flow-links">
+      <button class="wide" onclick="sheetNoBill(15)">No Open Bill on This Table</button>
+      <button class="wide warnf" onclick="sheetLocked(21)">Payment in Progress on Another Device</button>
+      <button class="wide" onclick="jumpNotFound()">Table Not Found</button>
+    </div>
+
+    <div class="flow-label">Theme</div>
+    <div class="flow-theme flow-links">
+      <button data-theme-opt="auto" onclick="setTheme('auto',this)">Auto</button>
+      <button data-theme-opt="light" onclick="setTheme('light',this)">Light</button>
+      <button data-theme-opt="dark" onclick="setTheme('dark',this)">Dark</button>
+    </div>
+
+    <div class="flow-links" style="margin-top:14px">
+      <button class="wide" style="justify-content:center;background:var(--navy);color:#fff;border-color:var(--navy)" onclick="restart()">
+        <svg viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M244,56v48a12,12,0,0,1-12,12H184a12,12,0,1,1,0-24H201.1l-19-17.38c-.13-.12-.26-.24-.38-.37A76,76,0,1,0,127,204h1a75.53,75.53,0,0,0,52.15-20.72,12,12,0,0,1,16.49,17.45A99.45,99.45,0,0,1,128,228h-1.37A100,100,0,1,1,198.51,57.06L220,76.72V56a12,12,0,0,1,24,0Z"/></svg>
+        Restart Prototype
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Force light mode (POS terminal, no dark) ----------
+  // The claude.ai viewer sets data-theme="dark" to match the reader's theme.
+  // Keep it pinned to light and revert any platform switch.
+  (function lockLight(){
+    var root = document.documentElement;
+    function force(){ if(root.getAttribute("data-theme") !== "light"){ root.setAttribute("data-theme","light"); } }
+    force();
+    try{ new MutationObserver(force).observe(root, {attributes:true, attributeFilter:["data-theme"]}); }catch(e){}
+  })();
+
+  // ---------- Money ----------
+  var BILL = 462.00; // subtotal 400 + service 40 + VAT 22
+  var state = { tip:0, tipMode:"none", method:"Card", outcome:"success", guest:false, procTimers:[] };
+
+  function fmt(n){ return n.toLocaleString("en-AE",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function grand(){ return BILL + state.tip; }
+
+  // ---------- Clock ----------
+  function tick(){
+    var d = new Date();
+    var h = d.getHours(); var m = d.getMinutes();
+    var ampm = h>=12 ? "PM":"AM"; var hh = h%12; if(hh===0) hh=12;
+    document.getElementById("osclock").textContent = hh+":"+(m<10?"0":"")+m+" "+ampm;
+  }
+  tick(); setInterval(tick, 15000);
+
+  // ---------- Navigation ----------
+  var current = "s-dashboard";
+  function screenEl(id){ return document.getElementById(id); }
+
+  window.go = function(id, dir){
+    if(id === current) return;
+    var from = screenEl(current);
+    var to = screenEl(id);
+    if(!to) return;
+    if(from){
+      from.classList.remove("is-active");
+      if(dir !== "back"){ from.classList.add("is-exit-left"); }
+      setTimeout(function(){ from.classList.remove("is-exit-left"); }, 360);
+    }
+    to.classList.remove("is-exit-left");
+    to.classList.add("is-active");
+    var body = to.querySelector(".screen__body");
+    if(body) body.scrollTop = 0;
+    var sheet = to.querySelector(".sbd-sheet");
+    if(sheet) sheet.scrollTop = 0;
+    // Dashboard carries a navy hero, so the OS status bar goes navy with it
+    document.getElementById("device").classList.toggle("is-hero", id === "s-dashboard");
+    current = id;
+  };
+
+  // ---------- Tables ----------
+  var TABLES = [
+    {no:12, status:"ready",     seats:6, server:"David R.", amt:"462.00", tag:"Your section"},
+    {no:18, status:"ready",     seats:2, server:"Sara M.",  amt:"155.00"},
+    {no:7,  status:"ready",     seats:4, server:"Karan P.", amt:"218.00"},
+    {no:4,  status:"open",      seats:2, server:"Mei L.",   amt:"96.50"},
+    {no:9,  status:"open",      seats:5, server:"David R.", amt:"340.00"},
+    {no:21, status:"locked",    seats:4, server:"Terminal 2"},
+    {no:15, status:"available", seats:4},
+    {no:3,  status:"available", seats:2},
+    {no:6,  status:"available", seats:6},
+    {no:22, status:"available", seats:2}
+  ];
+  var STATUS = {
+    ready:     {cls:"pill--ready",     label:"Ready to Pay", tclass:"ttile--payable"},
+    open:      {cls:"pill--open",      label:"Open Bill",    tclass:"ttile--payable"},
+    locked:    {cls:"pill--locked",    label:"In Progress",  tclass:"ttile--locked"},
+    available: {cls:"pill--available", label:"Available",    tclass:""}
+  };
+  var ICON = {
+    ready:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>',
+    open:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M68,100A12,12,0,0,1,80,88h96a12,12,0,0,1,0,24H80A12,12,0,0,1,68,100Zm12,52h96a12,12,0,0,0,0-24H80a12,12,0,0,0,0,24ZM236,56V208a12,12,0,0,1-17.37,10.73L192,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L128,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L64,205.42,37.37,218.73A12,12,0,0,1,20,208V56A20,20,0,0,1,40,36H216A20,20,0,0,1,236,56Zm-24,4H44V188.58l14.63-7.31a12,12,0,0,1,10.74,0L96,194.58l26.63-13.31a12,12,0,0,1,10.74,0L160,194.58l26.63-13.31a12,12,0,0,1,10.74,0L212,188.58Z"/></svg>',
+    locked:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg>',
+    available:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M220,78.53V72a44.05,44.05,0,0,0-44-44H80A44.05,44.05,0,0,0,36,72v6.53a52,52,0,0,0,0,99V200a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V177.51a52,52,0,0,0,0-99ZM80,52h96a20,20,0,0,1,20,20v4.62A52.09,52.09,0,0,0,152.17,124H103.83A52.09,52.09,0,0,0,60,76.62V72A20,20,0,0,1,80,52ZM206.81,155.86A12,12,0,0,0,196,167.8V196H60V167.8a12,12,0,0,0-10.81-11.94A28,28,0,1,1,80,128v36a12,12,0,0,0,24,0V148h48v16a12,12,0,0,0,24,0V128a28,28,0,1,1,30.81,27.86Z"/></svg>'
+  };
+
+  var filter = "ready";
+  function tableTapHandler(t){
+    if(t.status === "available"){ sheetNoBill(t.no); return; }
+    if(t.status === "locked"){ sheetLocked(t.no); return; }
+    // payable -> bill (demo uses Table 12 bill)
+    go("s-bill");
+  }
+
+  function renderTables(){
+    var grid = document.getElementById("tablesGrid");
+    var q = document.getElementById("tableSearch").value.trim();
+    grid.innerHTML = "";
+    var list = TABLES.slice();
+    // filter by chip
+    if(filter === "ready" && q === ""){
+      list = list.filter(function(t){ return t.status==="ready" || t.status==="open"; });
+    }
+    // sort: ready, open, locked, available
+    var order = {ready:0, open:1, locked:2, available:3};
+    list.sort(function(a,b){ return order[a.status]-order[b.status] || a.no-b.no; });
+    // search
+    if(q !== ""){
+      list = TABLES.filter(function(t){ return String(t.no).indexOf(q) === 0; })
+                   .sort(function(a,b){ return order[a.status]-order[b.status] || a.no-b.no; });
+    }
+
+    var empty = document.getElementById("tablesEmpty");
+    if(list.length === 0){ empty.classList.add("is-on"); grid.style.display="none"; return; }
+    empty.classList.remove("is-on"); grid.style.display="grid";
+
+    list.forEach(function(t){
+      var s = STATUS[t.status];
+      var btn = document.createElement("button");
+      btn.className = "ttile " + s.tclass;
+      btn.setAttribute("aria-label", "Table "+t.no+", "+s.label);
+      var meta = "";
+      if(t.status === "locked"){ meta = "On "+t.server; }
+      else if(t.amt){ meta = t.server+" . <b>AED "+t.amt+"</b>"; }
+      else { meta = "No open bill"; }
+      btn.innerHTML =
+        '<div class="ttile__top"><span class="ttile__no"><small>Table</small>'+t.no+'</span>'+
+        '<span class="ttile__seats"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M125.18,156.94a64,64,0,1,0-82.36,0,100.23,100.23,0,0,0-39.49,32,12,12,0,0,0,19.35,14.2,76,76,0,0,1,122.64,0,12,12,0,0,0,19.36-14.2A100.33,100.33,0,0,0,125.18,156.94ZM44,108a40,40,0,1,1,40,40A40,40,0,0,1,44,108Zm206.1,97.67a12,12,0,0,1-16.78-2.57A76.31,76.31,0,0,0,172,172a12,12,0,0,1,0-24,40,40,0,1,0-10.3-78.67,12,12,0,1,1-6.16-23.19,64,64,0,0,1,57.64,110.8,100.23,100.23,0,0,1,39.49,32A12,12,0,0,1,250.1,205.67Z"/></svg>'+t.seats+'</span></div>'+
+        '<span class="pill '+s.cls+'"><span class="dot"></span>'+ICON[t.status]+s.label+'</span>'+
+        '<div class="ttile__meta">'+meta+'</div>';
+      btn.onclick = function(){ tableTapHandler(t); };
+      grid.appendChild(btn);
+    });
+  }
+
+  window.filterTables = function(){
+    var q = document.getElementById("tableSearch").value.trim();
+    document.getElementById("searchClear").style.display = q ? "grid" : "none";
+    renderTables();
+  };
+  window.clearSearch = function(){
+    document.getElementById("tableSearch").value = "";
+    document.getElementById("searchClear").style.display = "none";
+    renderTables();
+  };
+  window.setFilter = function(f, el){
+    filter = f;
+    document.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("is-on"); });
+    if(el) el.classList.add("is-on");
+    renderTables();
+  };
+
+  // ---------- Bill / handoff ----------
+  window.proceedPayFull = function(){
+    state.guest = false;
+    document.getElementById("guestBanner").style.display = "none";
+    document.getElementById("guestBack").style.visibility = "visible";
+    // Carry any tip the guest already added on hand-back; if none was added it is a straight no-tip settle
+    updateTotals();
+    go("s-payment");
+  };
+  window.handToGuest = function(){
+    state.guest = true;
+    document.getElementById("guestBanner").style.display = "flex";
+    document.getElementById("guestBack").style.visibility = "hidden"; // locked, guest cannot go back
+    go("s-guest");
+  };
+  window.handBack = function(){
+    state.guest = false;
+    document.getElementById("guestBanner").style.display = "none";
+    document.getElementById("guestBack").style.visibility = "visible";
+    go("s-bill","back");
+    toast("Terminal handed back to David");
+  };
+
+  // ---------- Tip ----------
+  window.selectTip = function(mode, val, el){
+    state.tipMode = mode;
+    document.querySelectorAll(".tipbtn").forEach(function(b){ b.classList.remove("is-on"); });
+    if(el) el.classList.add("is-on");
+    var custom = document.getElementById("customTip");
+    if(mode === "custom"){
+      custom.classList.add("is-on");
+      var iv = parseFloat(document.getElementById("customTipInput").value);
+      state.tip = (!isNaN(iv) && iv>0) ? iv : 0;
+      setTimeout(function(){ document.getElementById("customTipInput").focus(); }, 60);
+    } else {
+      custom.classList.remove("is-on");
+      state.tip = val || 0;
+    }
+    updateTotals();
+  };
+  window.setCustomTip = function(v){
+    var iv = parseFloat(v);
+    state.tip = (!isNaN(iv) && iv>0) ? iv : 0;
+    updateTotals();
+  };
+
+  function updateTotals(){
+    var g = grand();
+    var tipRow = document.getElementById("tipSummaryRow");
+    if(tipRow){
+      if(state.tip > 0){
+        tipRow.style.display = "flex";
+        document.getElementById("tipSummaryVal").textContent = fmt(state.tip);
+      } else {
+        tipRow.style.display = "none";
+      }
+    }
+    document.getElementById("grandTipNote").textContent = fmt(state.tip);
+    document.getElementById("grandVal").textContent = fmt(g);
+    document.getElementById("continueAmt").textContent = "AED "+fmt(g);
+    document.getElementById("payAmt").textContent = fmt(g);
+    document.getElementById("qrAmt").textContent = fmt(g);
+    document.getElementById("procAmt").textContent = fmt(g);
+    document.getElementById("successAmt").textContent = fmt(g);
+    var sub = document.getElementById("paySub");
+    sub.textContent = state.tip>0 ? "Includes service, VAT and AED "+fmt(state.tip)+" tip" : "Includes service and VAT. No tip added";
+    // Keep the Open Bill in sync so a tip added by the guest shows on hand-back
+    var billTipRow = document.getElementById("billTipRow");
+    if(billTipRow){
+      billTipRow.style.display = state.tip>0 ? "flex" : "none";
+      document.getElementById("billTipVal").textContent = fmt(state.tip);
+      document.getElementById("billTotalVal").textContent = fmt(g);
+      document.getElementById("billPayFullAmt").textContent = "AED "+fmt(g);
+    }
+  }
+
+  // ---------- Cash ----------
+  window.payCash = function(){
+    state.method = "Cash";
+    document.getElementById("successMethod").textContent = "Cash";
+    go("s-success");
+    fireCheck();
+  };
+
+  // ---------- QR ----------
+  window.qrReceived = function(){
+    state.method = "QR";
+    document.getElementById("successMethod").textContent = "QR";
+    go("s-success");
+    fireCheck();
+  };
+
+  // ---------- Processing (guarded) ----------
+  window.startProcessing = function(outcome){
+    state.outcome = outcome || "success";
+    if(!outcome) state.method = "Card";
+    document.getElementById("successMethod").textContent = "Card";
+    clearProcTimers();
+    var slow = document.getElementById("procSlow");
+    slow.classList.remove("is-on");
+    go("s-processing");
+
+    // slow-network reassurance
+    state.procTimers.push(setTimeout(function(){ slow.classList.add("is-on"); }, 1500));
+
+    var delay = state.outcome === "success" ? 2700 : (state.outcome === "declined" ? 2300 : 2900);
+    state.procTimers.push(setTimeout(function(){
+      slow.classList.remove("is-on");
+      if(state.outcome === "success"){ go("s-success"); fireCheck(); }
+      else if(state.outcome === "declined"){ go("s-declined"); }
+      else { go("s-timeout"); }
+    }, delay));
+  };
+  function clearProcTimers(){
+    state.procTimers.forEach(function(t){ clearTimeout(t); });
+    state.procTimers = [];
+  }
+
+  // ---------- Success ----------
+  function fireCheck(){
+    var badge = document.querySelector("#s-success .check-path");
+    if(badge){
+      badge.style.animation = "none";
+      // reflow
+      void badge.offsetWidth;
+      badge.style.animation = "";
+    }
+  }
+  window.finishSuccess = function(){
+    restart(true);
+  };
+
+  // ---------- Sheets ----------
+  var scrim = document.getElementById("scrim");
+  function openSheet(html){
+    document.getElementById("sheetContent").innerHTML = html;
+    scrim.classList.add("is-on");
+  }
+  window.closeSheet = function(e){
+    if(e && e.target !== scrim && e !== true) return;
+    scrim.classList.remove("is-on");
+  };
+  window.sheetNoBill = function(no){
+    closeFlow(true);
+    if(current !== "s-find") go("s-find");
+    openSheet(
+      '<div class="sheet__ic sheet__ic--neutral"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M68,100A12,12,0,0,1,80,88h96a12,12,0,0,1,0,24H80A12,12,0,0,1,68,100Zm12,52h96a12,12,0,0,0,0-24H80a12,12,0,0,0,0,24ZM236,56V208a12,12,0,0,1-17.37,10.73L192,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L128,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L64,205.42,37.37,218.73A12,12,0,0,1,20,208V56A20,20,0,0,1,40,36H216A20,20,0,0,1,236,56Zm-24,4H44V188.58l14.63-7.31a12,12,0,0,1,10.74,0L96,194.58l26.63-13.31a12,12,0,0,1,10.74,0L160,194.58l26.63-13.31a12,12,0,0,1,10.74,0L212,188.58Z"/></svg></div>'+
+      '<h3>Table '+no+' Has No Open Bill</h3>'+
+      '<p>Nothing to settle here yet. Start a new order to open a check, or pick another table.</p>'+
+      '<div class="sheet__actions">'+
+        '<button class="btn btn--secondary btn--inert" onclick="toast(\'New Order is out of scope for this demo\')">Start New Order</button>'+
+        '<button class="btn btn--ghost" onclick="closeSheet(true)">Back to Tables</button>'+
+      '</div>'
+    );
+  };
+  window.sheetLocked = function(no){
+    closeFlow(true);
+    if(current !== "s-find") go("s-find");
+    openSheet(
+      '<div class="sheet__ic sheet__ic--warn"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg></div>'+
+      '<h3>Table '+no+' Is Being Settled</h3>'+
+      '<p>A payment is in progress on Terminal 2. To avoid charging the guest twice, this table is locked until that finishes.</p>'+
+      '<div class="sheet__actions">'+
+        '<button class="btn btn--secondary" onclick="closeSheet(true)">Got It</button>'+
+      '</div>'
+    );
+  };
+
+  // ---------- Other payment methods sheet ----------
+  window.openMethodsSheet = function(){
+    var ic = {
+      card:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg>',
+      cash:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Z"/></svg>',
+      receipt:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M68,100A12,12,0,0,1,80,88h96a12,12,0,0,1,0,24H80A12,12,0,0,1,68,100Zm12,52h96a12,12,0,0,0,0-24H80a12,12,0,0,0,0,24ZM236,56V208a12,12,0,0,1-17.37,10.73L192,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L128,205.42l-26.63,13.31a12,12,0,0,1-10.74,0L64,205.42,37.37,218.73A12,12,0,0,1,20,208V56A20,20,0,0,1,40,36H216A20,20,0,0,1,236,56Zm-24,4H44V188.58l14.63-7.31a12,12,0,0,1,10.74,0L96,194.58l26.63-13.31a12,12,0,0,1,10.74,0L160,194.58l26.63-13.31a12,12,0,0,1,10.74,0L212,188.58Z"/></svg>',
+      star:'<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></svg>'
+    };
+    function row(name, icon){
+      return '<button class="mrow" onclick="closeSheet(true);toast(\''+name+' is out of scope for this demo\')">'+
+        '<span class="mrow__ic">'+icon+'</span><b>'+name+'</b><span class="tag">Demo</span></button>';
+    }
+    openSheet(
+      '<h3 style="text-align:center;font-size:18px;font-weight:700;margin:2px 0 6px">Other Payment Methods</h3>'+
+      '<p style="text-align:center;font-size:13px;color:var(--muted);margin:0 auto 16px;max-width:250px;line-height:1.45">Card, cash and QR are on the main screen. The rest live here.</p>'+
+      '<div class="method-list">'+
+        row('Apple Pay', ic.card)+
+        row('Google Pay', ic.card)+
+        row('Gift Card', ic.receipt)+
+        row('Loyalty Points', ic.star)+
+        row('Room Charge', ic.receipt)+
+        row('Tabby (Pay Later)', ic.cash)+
+      '</div>'
+    );
+  };
+
+  // ---------- Toast ----------
+  var toastTimer;
+  window.toast = function(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("is-on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("is-on"); }, 2200);
+  };
+
+  // ---------- App hamburger menu ----------
+  window.openMenu = function(){
+    openSheet(
+      '<div style="padding:4px 2px 2px">'+
+        '<div style="display:flex;align-items:center;gap:12px;padding:8px 4px 16px;border-bottom:1px solid var(--line)">'+
+          '<div style="width:44px;height:44px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:16px">DR</div>'+
+          '<div><div style="font-size:15px;font-weight:700">David R.</div><div style="font-size:12.5px;color:var(--muted)">Server . Main Floor</div></div>'+
+        '</div>'+
+        '<div class="sheet__actions" style="margin-top:16px">'+
+          '<button class="btn btn--secondary" onclick="closeSheet(true);toast(\'Settings are out of scope for this demo\')">Settings</button>'+
+          '<div class="slide" id="logoutSlide" role="button" tabindex="0" aria-label="Slide to log out">'+
+            '<div class="slide__track">'+
+              '<span class="slide__label" id="logoutLabel">Slide to Log Out</span>'+
+              '<div class="slide__thumb" id="logoutThumb" aria-hidden="true">'+
+                '<svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"><path d="M64,52l76,76-76,76"/><path d="M144,52l76,76-76,76" opacity=".55"/></svg>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'
+    );
+    bindSlideLogout();
+  };
+
+  // Slide-to-log-out: destructive, touch-first (drag the handle to the end).
+  // No hover state is used — this is a handheld POS, not a pointer device.
+  function bindSlideLogout(){
+    var slide=document.getElementById("logoutSlide");
+    var thumb=document.getElementById("logoutThumb");
+    var label=document.getElementById("logoutLabel");
+    if(!slide||!thumb||!label) return;
+    var track=slide.querySelector(".slide__track");
+    var dragging=false, startX=0, x=0, done=false;
+    function maxTravel(){ return Math.max(0, track.clientWidth - thumb.offsetWidth - 8); }
+    function paint(px){
+      x=Math.max(0, Math.min(px, maxTravel()));
+      thumb.style.transform="translateX("+x+"px)";
+      var p = maxTravel() ? x/maxTravel() : 0;
+      label.style.opacity=String(Math.max(0, 1 - p*1.5));
+      track.style.setProperty("--fill",(x+thumb.offsetWidth+4)+"px");
+    }
+    function cx(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : e.clientX; }
+    function down(e){
+      if(done) return;
+      thumb.classList.remove("hint");
+      dragging=true; thumb.style.transition="none"; startX=cx(e)-x;
+      if(e.pointerId!=null&&thumb.setPointerCapture){ try{thumb.setPointerCapture(e.pointerId);}catch(_){} }
+    }
+    function move(e){ if(!dragging) return; paint(cx(e)-startX); if(e.cancelable) e.preventDefault(); }
+    function up(){
+      if(!dragging) return;
+      dragging=false; thumb.style.transition="transform .25s var(--ease)";
+      if(x>=maxTravel()*0.9){ finish(); } else { paint(0); label.style.opacity="1"; }
+    }
+    function finish(){
+      done=true; slide.classList.add("is-done");
+      thumb.style.transition="transform .2s var(--ease)"; paint(maxTravel());
+      label.textContent="Logging out"; label.style.opacity="1";
+      setTimeout(function(){ closeSheet(true); toast("Logged out (demo)"); }, 480);
+    }
+    if(window.PointerEvent){
+      thumb.addEventListener("pointerdown",down);
+      thumb.addEventListener("pointermove",move);
+      thumb.addEventListener("pointerup",up);
+      thumb.addEventListener("pointercancel",up);
+    } else {
+      thumb.addEventListener("touchstart",down,{passive:true});
+      thumb.addEventListener("touchmove",move,{passive:false});
+      thumb.addEventListener("touchend",up);
+      thumb.addEventListener("mousedown",down);
+      document.addEventListener("mousemove",move);
+      document.addEventListener("mouseup",up);
+    }
+    slide.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); finish(); } });
+    // subtle one-off hint so the waiter reads this as a swipe, not a tap
+    thumb.addEventListener("animationend", function(){ thumb.classList.remove("hint"); });
+    setTimeout(function(){ if(!done && !dragging){ thumb.classList.add("hint"); } }, 500);
+  }
+
+  // ---------- Flow menu ----------
+  var flowpanel = document.getElementById("flowpanel");
+  window.openFlow = function(){ flowpanel.classList.add("is-on"); };
+  window.closeFlow = function(e){
+    if(e === true){ flowpanel.classList.remove("is-on"); return; }
+    if(e && e.target === flowpanel){ flowpanel.classList.remove("is-on"); }
+  };
+  window.jump = function(id){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); go(id); };
+  window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
+  window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
+  window.jumpNotFound = function(){
+    closeFlow(true);
+    go("s-find");
+    document.getElementById("tableSearch").value = "99";
+    document.getElementById("searchClear").style.display = "grid";
+    renderTables();
+  };
+
+  // ---------- Restart ----------
+  window.restart = function(silent){
+    clearProcTimers();
+    scrim.classList.remove("is-on");
+    closeFlow(true);
+    state.tip = 0; state.tipMode = "none"; state.method = "Card"; state.outcome="success"; state.guest=false;
+    document.querySelectorAll(".tipbtn").forEach(function(b){ b.classList.remove("is-on"); });
+    var none = document.querySelector('.tipbtn[data-tip="none"]'); if(none) none.classList.add("is-on");
+    document.getElementById("customTip").classList.remove("is-on");
+    document.getElementById("customTipInput").value = "";
+    document.getElementById("guestBanner").style.display = "none";
+    document.getElementById("guestBack").style.visibility = "visible";
+    document.getElementById("successMethod").textContent = "Card";
+    updateTotals();
+    clearSearch();
+    setFilter("ready", document.querySelector('[data-filter="ready"]'));
+    go("s-dashboard","back");
+  };
+
+  // ---------- Theme ----------
+  window.setTheme = function(mode, el){
+    if(mode === "auto"){ document.documentElement.removeAttribute("data-theme"); }
+    else { document.documentElement.setAttribute("data-theme", mode); }
+    document.querySelectorAll("[data-theme-opt]").forEach(function(b){ b.classList.remove("is-on"); });
+    if(el) el.classList.add("is-on");
+  };
+
+  // ---------- QR code (deterministic pseudo pattern) ----------
+  function buildQR(){
+    var svg = document.getElementById("qrCode");
+    var N = 29, cell = 1;
+    function finder(x,y){
+      var g = '';
+      g += '<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="#0b1f3a"/>';
+      g += '<rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#ffffff"/>';
+      g += '<rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3" fill="#0b1f3a"/>';
+      return g;
+    }
+    var out = '<rect width="29" height="29" fill="#ffffff"/>';
+    // deterministic modules
+    var seed = 20260916;
+    function rnd(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return (seed>>16)&0xff; }
+    for(var y=0;y<N;y++){
+      for(var x=0;x<N;x++){
+        var inFinder = (x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);
+        if(inFinder) continue;
+        if(rnd() > 128){
+          out += '<rect x="'+x+'" y="'+y+'" width="'+cell+'" height="'+cell+'" fill="#0b1f3a"/>';
+        }
+      }
+    }
+    out += finder(0,0) + finder(N-7,0) + finder(0,N-7);
+    svg.innerHTML = out;
+  }
+
+  // ---------- Init ----------
+  document.getElementById("device").classList.add("is-hero"); // dashboard is active on load
+  renderTables();
+  updateTotals();
+  buildQR();
+  // POS terminal: always default to light, ignore OS dark mode
+  document.documentElement.setAttribute("data-theme","light");
+  document.querySelector('[data-theme-opt="light"]').classList.add("is-on");
+
+  // Guard: keyboard Escape closes overlays
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      if(flowpanel.classList.contains("is-on")){ closeFlow(true); }
+      else if(scrim.classList.contains("is-on")){ closeSheet(true); }
+    }
+  });
+})();
+</script>
+
+</body></html>
