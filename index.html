@@ -756,13 +756,13 @@
   .slide.is-done .slide__thumb{background:#fff;color:var(--danger);}
   @keyframes slidehint{0%,100%{transform:translateX(0);}42%{transform:translateX(13px);}72%{transform:translateX(0);}}
   .slide__thumb.hint{animation:slidehint 1.05s var(--ease) 2;}
-  .slide--cancel .slide__track{background:var(--surface-3);border-color:var(--line-strong);}
-  .slide--cancel .slide__track::before{background:color-mix(in srgb,var(--ink) 12%,transparent);}
-  .slide--cancel .slide__label{color:var(--ink-soft);}
-  .slide--cancel .slide__thumb{background:var(--ink);color:#fff;}
-  .slide--cancel.is-done .slide__track{background:var(--ink);border-color:var(--ink);}
+  .slide--cancel .slide__track{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 40%,transparent);}
+  .slide--cancel .slide__track::before{background:color-mix(in srgb,var(--warn) 20%,transparent);}
+  .slide--cancel .slide__label{color:var(--warn-ink);}
+  .slide--cancel .slide__thumb{background:var(--warn);color:#fff;}
+  .slide--cancel.is-done .slide__track{background:var(--warn);border-color:var(--warn);}
   .slide--cancel.is-done .slide__label{color:#fff;}
-  .slide--cancel.is-done .slide__thumb{background:#fff;color:var(--ink);}
+  .slide--cancel.is-done .slide__thumb{background:#fff;color:var(--warn-ink);}
 
   /* ===================== Flow stepper (Table / Review / Pay) ===================== */
   .stepper{display:flex;gap:8px;padding:2px 18px 10px;flex:0 0 auto;}
@@ -1379,7 +1379,7 @@
         </div>
       </div>
       <div class="actionbar">
-        <button class="btn btn--primary" onclick="startQR('success')">Show QR Again</button>
+        <button class="btn btn--primary" onclick="startQR()">Show QR Again</button>
         <button class="btn btn--secondary" onclick="go(qrReturn())">Choose Another Method</button>
       </div>
     </section>
@@ -1561,8 +1561,8 @@
       <button class="wide" onclick="jump('s-declined')"><span class="n">A</span>Card Declined, Retry and QR Fallback</button>
       <button class="wide" onclick="reconcileDemo('success')"><span class="n">B</span>Timeout, Reconcile Charge Found</button>
       <button class="wide" onclick="reconcileDemo('notcharged')"><span class="n">C</span>Timeout, Reconcile Not Charged</button>
-      <button class="wide" onclick="jumpQR('success')"><span class="n">D</span>Scan to Pay, Guest Pays (Success)</button>
-      <button class="wide" onclick="jumpQR('failed')"><span class="n">E</span>Scan to Pay, Not Completed</button>
+      <button class="wide" onclick="jumpQRPaid()"><span class="n">D</span>Scan to Pay, Guest Pays (Success)</button>
+      <button class="wide" onclick="jumpQRExpired()"><span class="n">E</span>Scan to Pay, Code Expired</button>
     </div>
 
     <div class="flow-label">Edge States</div>
@@ -1822,18 +1822,22 @@
 
   // ---------- QR (guest-driven, auto-resolves on the provider's confirmation) ----------
   window.qrReturn = function(){ return state.qrFrom || "s-payment"; };
-  window.startQR = function(outcome){
+  window.startQR = function(){
     state.method = "QR";
     document.getElementById("successMethod").textContent = "QR";
     if(current !== "s-qr" && current !== "s-qr-failed"){ state.qrFrom = current; }
     clearProcTimers();
     go("s-qr");
-    if(qrSlide){ qrSlide.reset(); qrSlide.hint(); }
-    var delay = outcome === "failed" ? 4000 : 3000;
-    state.procTimers.push(setTimeout(function(){
-      if(outcome === "failed"){ go("s-qr-failed"); }
-      else { go("s-success"); fireCheck(); }
-    }, delay));
+    if(qrSlide){ qrSlide.reset(); }
+    // No nudge here on purpose: cancelling is a deliberate escape, not something to prompt.
+    // The code waits for the guest, it does not auto-expire in seconds.
+    // Exits: the guest pays (success), or the waiter swipes to cancel and switch.
+  };
+  // Demo helper: simulate the guest completing the scan on their phone
+  window.qrDemoPaid = function(){
+    startQR();
+    clearProcTimers();
+    state.procTimers.push(setTimeout(function(){ go("s-success"); fireCheck(); }, 2200));
   };
   // Choosing another method cancels the code first so a late scan cannot land
   window.cancelQR = function(){
@@ -2053,7 +2057,8 @@
   window.jump = function(id){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); go(id); };
   window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
-  window.jumpQR = function(o){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(o); };
+  window.jumpQRPaid = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoPaid(); };
+  window.jumpQRExpired = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); state.qrFrom = "s-payment"; go("s-qr-failed"); };
   window.jumpNotFound = function(){
     closeFlow(true);
     go("s-find");
