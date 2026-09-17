@@ -1365,25 +1365,6 @@
       </div>
     </section>
 
-    <!-- ============================= QR NOT COMPLETED ============================= -->
-    <section class="screen" id="s-qr-failed" aria-label="Scan to pay not completed">
-      <div class="result">
-        <div class="result__badge result__badge--warn">
-          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M236,137A108.13,108.13,0,1,1,119,20,12,12,0,0,1,121,44,84.12,84.12,0,1,0,212,135,12,12,0,1,1,236,137ZM116,76v52a12,12,0,0,0,12,12h52a12,12,0,0,0,0-24H140V76a12,12,0,0,0-24,0Zm92,20a16,16,0,1,0-16-16A16,16,0,0,0,208,96ZM176,64a16,16,0,1,0-16-16A16,16,0,0,0,176,64Z"/></svg>
-        </div>
-        <h2>Payment Not Completed</h2>
-        <p>The guest did not finish the scan, or the code expired. Nothing was charged.</p>
-        <div class="reason">
-          <span class="reason__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
-          <div><b>Bill stays open</b><span>No payment came through, so it is safe to show the code again or take another method.</span></div>
-        </div>
-      </div>
-      <div class="actionbar">
-        <button class="btn btn--primary" onclick="startQR()">Show QR Again</button>
-        <button class="btn btn--secondary" onclick="go(qrReturn())">Choose Another Method</button>
-      </div>
-    </section>
-
     <!-- ============================= SUCCESS ============================= -->
     <section class="screen" id="s-success" aria-label="Payment successful">
       <div class="result">
@@ -1562,7 +1543,7 @@
       <button class="wide" onclick="reconcileDemo('success')"><span class="n">B</span>Timeout, Reconcile Charge Found</button>
       <button class="wide" onclick="reconcileDemo('notcharged')"><span class="n">C</span>Timeout, Reconcile Not Charged</button>
       <button class="wide" onclick="jumpQRPaid()"><span class="n">D</span>Scan to Pay, Guest Pays (Success)</button>
-      <button class="wide" onclick="jumpQRExpired()"><span class="n">E</span>Scan to Pay, Code Expired</button>
+      <button class="wide" onclick="jumpQRShow()"><span class="n">E</span>Scan to Pay (Waiting, Swipe to Cancel)</button>
     </div>
 
     <div class="flow-label">Edge States</div>
@@ -1825,7 +1806,7 @@
   window.startQR = function(){
     state.method = "QR";
     document.getElementById("successMethod").textContent = "QR";
-    if(current !== "s-qr" && current !== "s-qr-failed"){ state.qrFrom = current; }
+    if(current !== "s-qr"){ state.qrFrom = current; }
     clearProcTimers();
     go("s-qr");
     if(qrSlide){ qrSlide.reset(); }
@@ -1838,13 +1819,6 @@
     startQR();
     clearProcTimers();
     state.procTimers.push(setTimeout(function(){ go("s-success"); fireCheck(); }, 2200));
-  };
-  // Demo helper: start on the QR, then simulate the code expiring / guest abandoning
-  window.qrDemoExpired = function(){
-    startQR();
-    state.qrFrom = "s-payment";
-    clearProcTimers();
-    state.procTimers.push(setTimeout(function(){ go("s-qr-failed"); }, 2500));
   };
   // Choosing another method cancels the code first so a late scan cannot land
   window.cancelQR = function(){
@@ -2065,7 +2039,7 @@
   window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
   window.jumpQRPaid = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoPaid(); };
-  window.jumpQRExpired = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoExpired(); };
+  window.jumpQRShow = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(); };
   window.jumpNotFound = function(){
     closeFlow(true);
     go("s-find");
