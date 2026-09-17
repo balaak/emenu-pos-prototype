@@ -1839,6 +1839,13 @@
     clearProcTimers();
     state.procTimers.push(setTimeout(function(){ go("s-success"); fireCheck(); }, 2200));
   };
+  // Demo helper: start on the QR, then simulate the code expiring / guest abandoning
+  window.qrDemoExpired = function(){
+    startQR();
+    state.qrFrom = "s-payment";
+    clearProcTimers();
+    state.procTimers.push(setTimeout(function(){ go("s-qr-failed"); }, 2500));
+  };
   // Choosing another method cancels the code first so a late scan cannot land
   window.cancelQR = function(){
     clearProcTimers();
@@ -2058,7 +2065,7 @@
   window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
   window.jumpQRPaid = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoPaid(); };
-  window.jumpQRExpired = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); state.qrFrom = "s-payment"; go("s-qr-failed"); };
+  window.jumpQRExpired = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoExpired(); };
   window.jumpNotFound = function(){
     closeFlow(true);
     go("s-find");
