@@ -1410,8 +1410,56 @@
         </div>
       </div>
       <div class="actionbar">
-        <button class="btn btn--primary" onclick="startProcessing('success')">Check Status and Resume</button>
-        <button class="btn btn--secondary" onclick="go('s-payment')">Try a Different Method</button>
+        <button class="btn btn--primary" onclick="reconcile('success')">Check Status and Resume</button>
+      </div>
+    </section>
+
+    <!-- ============================= RECONCILED, NOT CHARGED ============================= -->
+    <section class="screen" id="s-notcharged" aria-label="Reconciled, no charge was taken">
+      <div class="appbar">
+        <div>
+          <div class="appbar__title">Bill Still Open</div>
+          <div class="appbar__sub">Checked with the bank</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <div class="reason" style="margin-top:2px">
+          <span class="reason__ic" style="color:var(--pos)"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,36H48A20,20,0,0,0,28,56v56c0,54.29,26.32,87.22,48.4,105.29,23.71,19.39,47.44,26,48.44,26.29a12.1,12.1,0,0,0,6.32,0c1-.28,24.73-6.9,48.44-26.29,22.08-18.07,48.4-51,48.4-105.29V56A20,20,0,0,0,208,36Zm-4,76c0,35.71-13.09,64.69-38.91,86.15A126.28,126.28,0,0,1,128,219.38a126.14,126.14,0,0,1-37.09-21.23C65.09,176.69,52,147.71,52,112V60H204ZM79.51,144.49a12,12,0,1,1,17-17L112,143l47.51-47.52a12,12,0,0,1,17,17l-56,56a12,12,0,0,1-17,0Z"/></svg></span>
+          <div><b>No charge was taken</b><span>We checked with the bank. The card was not charged, so the guest will not pay twice. Collect payment below to close the bill.</span></div>
+        </div>
+
+        <div class="pay-amount" style="margin-top:14px">
+          <div class="lbl">Amount to Collect</div>
+          <div class="val"><small>AED</small><span id="ncAmt">462.00</span></div>
+        </div>
+
+        <div class="section-label">Choose Payment Method</div>
+        <div class="methods-row">
+          <button class="mtile mtile--card" onclick="startProcessing()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
+            <b>Card</b>
+          </button>
+          <button class="mtile" onclick="payCash()">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z"/></svg></span>
+            <b>Cash</b>
+          </button>
+          <button class="mtile" onclick="go('s-qr')">
+            <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96Zm4,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-60,76V148a12,12,0,0,1,24,0v24a12,12,0,0,1-24,0Zm84-8a12,12,0,0,1-12,12H196v32a12,12,0,0,1-12,12H148a12,12,0,0,1,0-24h24V148a12,12,0,0,1,24,0v4h12A12,12,0,0,1,220,164Z"/></svg></span>
+            <b>QR</b>
+          </button>
+        </div>
+        <button class="mother" onclick="openMethodsSheet()">
+          <span class="mother__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M156,128a28,28,0,1,1-28-28A28,28,0,0,1,156,128ZM48,100a28,28,0,1,0,28,28A28,28,0,0,0,48,100Zm160,0a28,28,0,1,0,28,28A28,28,0,0,0,208,100Z"/></svg></span>
+          <span class="mother__txt"><b>Other Methods</b><span>Apple Pay, wallet, gift card, room charge</span></span>
+          <span class="mother__go"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></span>
+        </button>
       </div>
     </section>
 
@@ -1460,6 +1508,8 @@
     <div class="flow-links">
       <button class="wide" onclick="jump('s-declined')"><span class="n">A</span>Card Declined, Retry and QR Fallback</button>
       <button class="wide" onclick="jump('s-timeout')"><span class="n">B</span>Network Timeout, Resumable Payment</button>
+      <button class="wide" onclick="jumpSuccess()"><span class="n">C</span>Reconcile, Charge Found (Success)</button>
+      <button class="wide" onclick="jump('s-notcharged')"><span class="n">D</span>Reconcile, Not Charged (Choose Method)</button>
     </div>
 
     <div class="flow-label">Edge States</div>
@@ -1696,6 +1746,7 @@
     document.getElementById("qrAmt").textContent = fmt(g);
     document.getElementById("procAmt").textContent = fmt(g);
     document.getElementById("successAmt").textContent = fmt(g);
+    var nc = document.getElementById("ncAmt"); if(nc) nc.textContent = fmt(g);
     var sub = document.getElementById("paySub");
     sub.textContent = state.tip>0 ? "Includes service, VAT and AED "+fmt(state.tip)+" tip" : "Includes service and VAT. No tip added";
     // Keep the Open Bill in sync so a tip added by the guest shows on hand-back
@@ -1722,6 +1773,19 @@
     document.getElementById("successMethod").textContent = "QR";
     go("s-success");
     fireCheck();
+  };
+
+  // ---------- Reconcile after an uncertain result ----------
+  // From the uncertain state the ONLY safe exit is to resolve the unknown.
+  // Check the bank first, then either close the bill (charged once) or, if
+  // nothing was charged, open the safe method chooser.
+  window.reconcile = function(outcome){
+    toast("Checking status with the bank");
+    clearProcTimers();
+    state.procTimers.push(setTimeout(function(){
+      if(outcome === "notcharged"){ updateTotals(); go("s-notcharged"); }
+      else { go("s-success"); fireCheck(); }
+    }, 900));
   };
 
   // ---------- Processing (guarded) ----------
