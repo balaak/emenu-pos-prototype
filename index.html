@@ -764,6 +764,35 @@
   .slide--cancel.is-done .slide__label{color:#fff;}
   .slide--cancel.is-done .slide__thumb{background:#fff;color:var(--warn-ink);}
 
+  /* ===================== Tap or insert card (armed state) ===================== */
+  .tapcard{background:none;border:none;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;padding:0;color:var(--ink);width:100%;}
+  .tapcard:active{transform:scale(.99);}
+  .tapcard__nfc{position:relative;width:170px;height:170px;display:grid;place-items:center;margin-bottom:32px;}
+  .tapcard__ring{position:absolute;width:150px;height:150px;top:10px;left:10px;border-radius:50%;border:2px solid var(--brand);opacity:0;animation:tapripple 2.6s var(--ease) infinite;}
+  .tapcard__ring:nth-child(2){animation-delay:.85s;}
+  .tapcard__ring:nth-child(3){animation-delay:1.7s;}
+  @keyframes tapripple{0%{transform:scale(.48);opacity:.5;}70%{opacity:.1;}100%{transform:scale(1.15);opacity:0;}}
+  .tapcard__ic{position:relative;z-index:1;width:100px;height:100px;border-radius:50%;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand);}
+  .tapcard__ic svg{width:54px;height:54px;}
+  .tapcard__total{font-size:15px;font-weight:600;color:var(--muted);}
+  .tapcard__amt{font-size:40px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:4px;line-height:1;}
+  .tapcard__amt small{font-size:18px;font-weight:700;color:var(--muted);margin-right:6px;letter-spacing:0;}
+  .tapcard__hint{font-size:16px;font-weight:500;color:var(--muted);margin-top:14px;}
+
+  /* ===================== PIN step-up (tap over AED 500) ===================== */
+  .pin-note{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;font-weight:500;color:var(--warn-ink);background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:12px;padding:10px 12px;margin:2px 0 2px;}
+  .pin-note svg{width:16px;height:16px;flex:0 0 auto;margin-top:1px;}
+  .pin-amt{text-align:center;font-size:13px;font-weight:600;color:var(--muted);margin-top:12px;}
+  .pin-amt b{display:block;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px;}
+  .pin-amt b small{font-size:14px;color:var(--muted);margin-right:5px;font-weight:700;}
+  .pin-dots{display:flex;justify-content:center;gap:16px;margin:16px 0 4px;}
+  .pin-dot{width:15px;height:15px;border-radius:50%;border:2px solid var(--line-strong);transition:all .15s ease;}
+  .pin-dot.on{background:var(--brand);border-color:var(--brand);}
+  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:290px;margin:14px auto 0;}
+  .pin-key{height:58px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-size:23px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .1s var(--ease);}
+  .pin-key:active{transform:translateY(1px) scale(.98);}
+  .pin-key--fn{background:var(--surface-2);font-size:14px;font-weight:600;box-shadow:none;color:var(--ink-soft);}
+
   /* ===================== Flow stepper (Table / Review / Pay) ===================== */
   .stepper{display:flex;gap:8px;padding:2px 18px 10px;flex:0 0 auto;}
   .step{flex:1 1 0;display:flex;flex-direction:column;gap:6px;}
@@ -1213,7 +1242,7 @@
       <div class="actionbar">
         <div class="collect-line">Amount to collect<span class="collect-amt" id="continueAmt">AED 462.00</span></div>
         <div class="methods-row">
-          <button class="mtile mtile--card" onclick="startProcessing()">
+          <button class="mtile mtile--card" onclick="startCardPrompt()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
             <b>Card</b>
           </button>
@@ -1261,7 +1290,7 @@
 
         <div class="section-label">Payment Method</div>
         <div class="methods-row">
-          <button class="mtile mtile--card" onclick="startProcessing()">
+          <button class="mtile mtile--card" onclick="startCardPrompt()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
             <b>Card</b>
           </button>
@@ -1279,6 +1308,79 @@
           <span class="mother__txt"><b>Other Methods</b><span>Apple Pay, wallet, gift card, room charge</span></span>
           <span class="mother__go"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg></span>
         </button>
+      </div>
+    </section>
+
+    <!-- ============================= TAP OR INSERT CARD ============================= -->
+    <section class="screen" id="s-cardprompt" aria-label="Tap or insert card">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back to payment methods" onclick="go(cardPromptReturn(),'back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Pay by Card</div>
+          <div class="appbar__sub">Table 12 . Check #2536</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:40px">
+        <button class="tapcard" onclick="cardTapped()" aria-label="Simulate the guest tapping or inserting the card">
+          <span class="tapcard__nfc">
+            <span class="tapcard__ring"></span><span class="tapcard__ring"></span><span class="tapcard__ring"></span>
+            <span class="tapcard__ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><path d="M18 16a12 12 0 0 1 0 16"/><path d="M24 11a20 20 0 0 1 0 26"/><path d="M30 7a28 28 0 0 1 0 34"/></svg></span>
+          </span>
+          <span class="tapcard__total">Total</span>
+          <span class="tapcard__amt"><small>AED</small><span id="cardPromptAmt">462.00</span></span>
+          <span class="tapcard__hint">Tap or insert</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================= ENTER PIN (tap over AED 500) ============================= -->
+    <section class="screen" id="s-pin" aria-label="Enter PIN">
+      <div class="appbar">
+        <button class="iconbtn" aria-label="Back" onclick="go('s-cardprompt','back')">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
+        </button>
+        <div>
+          <div class="appbar__title">Enter PIN</div>
+          <div class="appbar__sub">Table 12 . Check #2536</div>
+        </div>
+      </div>
+
+      <div class="stepper" aria-label="Step 3 of 3: Pay">
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Table</span></div>
+        <div class="step is-done"><span class="step__bar"></span><span class="step__lbl">Review</span></div>
+        <div class="step is-active"><span class="step__bar"></span><span class="step__lbl">Pay</span></div>
+      </div>
+
+      <div class="screen__body">
+        <div class="pin-note">
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Zm-60-52a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z"/></svg>
+          <span>Over AED 500, so the guest inserts the card and enters their PIN.</span>
+        </div>
+        <div class="pin-amt">Amount to Collect<b><small>AED</small><span id="pinAmt">542.00</span></b></div>
+        <div class="pin-dots" id="pinDots"><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span></div>
+        <div class="pin-pad">
+          <button class="pin-key" onclick="pinPress('1')">1</button>
+          <button class="pin-key" onclick="pinPress('2')">2</button>
+          <button class="pin-key" onclick="pinPress('3')">3</button>
+          <button class="pin-key" onclick="pinPress('4')">4</button>
+          <button class="pin-key" onclick="pinPress('5')">5</button>
+          <button class="pin-key" onclick="pinPress('6')">6</button>
+          <button class="pin-key" onclick="pinPress('7')">7</button>
+          <button class="pin-key" onclick="pinPress('8')">8</button>
+          <button class="pin-key" onclick="pinPress('9')">9</button>
+          <button class="pin-key pin-key--fn" onclick="go('s-cardprompt','back')">Cancel</button>
+          <button class="pin-key" onclick="pinPress('0')">0</button>
+          <button class="pin-key pin-key--fn" onclick="pinDelete()">Delete</button>
+        </div>
       </div>
     </section>
 
@@ -1475,7 +1577,7 @@
 
         <div class="section-label">Choose Payment Method</div>
         <div class="methods-row">
-          <button class="mtile mtile--card" onclick="startProcessing()">
+          <button class="mtile mtile--card" onclick="startCardPrompt()">
             <span class="mtile__ic"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg></span>
             <b>Card</b>
           </button>
@@ -1544,6 +1646,7 @@
       <button class="wide" onclick="reconcileDemo('notcharged')"><span class="n">C</span>Timeout, Reconcile Not Charged</button>
       <button class="wide" onclick="jumpQRPaid()"><span class="n">D</span>Scan to Pay, Guest Pays (Success)</button>
       <button class="wide" onclick="jumpQRShow()"><span class="n">E</span>Scan to Pay (Waiting, Swipe to Cancel)</button>
+      <button class="wide" onclick="jumpPinDemo()"><span class="n">F</span>Card over AED 500 (PIN step-up)</button>
     </div>
 
     <div class="flow-label">Edge States</div>
@@ -1842,6 +1945,39 @@
   // Flow-menu drivers: start on the uncertain screen with the outcome pre-armed
   window.reconcileDemo = function(o){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); state.reconcileOutcome = o; go("s-timeout"); };
 
+  // ---------- Card: tap or insert prompt (armed state, shown before authorizing) ----------
+  window.startCardPrompt = function(){
+    state.method = "Card";
+    document.getElementById("successMethod").textContent = "Card";
+    if(current !== "s-cardprompt"){ state.cardFrom = current; }
+    document.getElementById("cardPromptAmt").textContent = fmt(grand());
+    go("s-cardprompt");
+  };
+  window.cardPromptReturn = function(){ return state.cardFrom || "s-payment"; };
+
+  // ---------- PIN step-up: UAE mandates PIN on a tap over AED 500 ----------
+  var CVM_LIMIT = 500;
+  var pinBuf = "";
+  function renderPinDots(){
+    var dots = document.querySelectorAll("#pinDots .pin-dot");
+    for(var i=0;i<dots.length;i++){ dots[i].classList.toggle("on", i < pinBuf.length); }
+  }
+  window.cardTapped = function(){
+    if(grand() > CVM_LIMIT){ openPin(); } else { startProcessing(); }
+  };
+  window.openPin = function(){
+    pinBuf = "";
+    document.getElementById("pinAmt").textContent = fmt(grand());
+    renderPinDots();
+    go("s-pin");
+  };
+  window.pinPress = function(d){
+    if(pinBuf.length >= 4) return;
+    pinBuf += d; renderPinDots();
+    if(pinBuf.length === 4){ setTimeout(function(){ startProcessing(); }, 380); }
+  };
+  window.pinDelete = function(){ pinBuf = pinBuf.slice(0,-1); renderPinDots(); };
+
   // ---------- Processing (guarded) ----------
   window.startProcessing = function(outcome){
     state.outcome = outcome || "success";
@@ -2040,6 +2176,16 @@
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
   window.jumpQRPaid = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoPaid(); };
   window.jumpQRShow = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(); };
+  window.jumpPinDemo = function(){
+    clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true);
+    state.tip = 80; state.tipMode = "p20";
+    document.querySelectorAll(".tipbtn").forEach(function(b){ b.classList.remove("is-on"); });
+    var b = document.querySelector('.tipbtn[data-tip="p20"]'); if(b) b.classList.add("is-on");
+    document.getElementById("customTip").classList.remove("is-on");
+    updateTotals();
+    state.method = "Card"; document.getElementById("successMethod").textContent = "Card";
+    openPin();
+  };
   window.jumpNotFound = function(){
     closeFlow(true);
     go("s-find");
