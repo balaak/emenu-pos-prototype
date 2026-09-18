@@ -782,16 +782,23 @@
   /* ===================== PIN step-up (tap over AED 500) ===================== */
   .pin-note{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;font-weight:500;color:var(--warn-ink);background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:12px;padding:10px 12px;margin:2px 0 2px;}
   .pin-note svg{width:16px;height:16px;flex:0 0 auto;margin-top:1px;}
+  /* PIN body is a flex column so the keypad can sit in the bottom thumb zone */
+  #s-pin .screen__body{display:flex;flex-direction:column;}
   .pin-amt{text-align:center;font-size:13px;font-weight:600;color:var(--muted);margin-top:12px;}
-  .pin-amt b{display:block;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px;}
-  .pin-amt b small{font-size:14px;color:var(--muted);margin-right:5px;font-weight:700;}
-  .pin-dots{display:flex;justify-content:center;gap:16px;margin:16px 0 4px;}
+  .pin-amt b{display:block;font-size:40px;font-weight:800;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:4px;line-height:1.05;}
+  .pin-amt b small{font-size:18px;color:var(--muted);margin-right:6px;font-weight:700;}
+  .pin-dots{display:flex;justify-content:center;gap:16px;margin:18px 0 4px;}
   .pin-dot{width:15px;height:15px;border-radius:50%;border:2px solid var(--line-strong);transition:all .15s ease;}
   .pin-dot.on{background:var(--brand);border-color:var(--brand);}
-  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:290px;margin:14px auto 0;}
-  .pin-key{height:58px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-size:23px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .1s var(--ease);}
+  /* margin-top:auto pushes the pad to the bottom of the flex column; left/right auto centers it */
+  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:330px;margin:auto auto 14px;}
+  /* Focused sub-flows: hide the reviewer Flow button so it never covers the keypad (PIN)
+     or the swipe-to-cancel control (QR) */
+  body:has(#s-pin.is-active) .flowfab,
+  body:has(#s-qr.is-active) .flowfab{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,visibility .15s ease;}
+  .pin-key{height:72px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-size:25px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .1s var(--ease);}
   .pin-key:active{transform:translateY(1px) scale(.98);}
-  .pin-key--fn{background:var(--surface-2);font-size:14px;font-weight:600;box-shadow:none;color:var(--ink-soft);}
+  .pin-key--fn{background:var(--surface-2);font-size:15px;font-weight:600;box-shadow:none;color:var(--ink-soft);}
 
   /* ===================== Flow stepper (Table / Review / Pay) ===================== */
   .stepper{display:flex;gap:8px;padding:2px 18px 10px;flex:0 0 auto;}
@@ -1906,23 +1913,24 @@
 
   // ---------- QR (guest-driven, auto-resolves on the provider's confirmation) ----------
   window.qrReturn = function(){ return state.qrFrom || "s-payment"; };
-  window.startQR = function(){
+  window.startQR = function(waitOnly){
     state.method = "QR";
     document.getElementById("successMethod").textContent = "QR";
     if(current !== "s-qr"){ state.qrFrom = current; }
     clearProcTimers();
     go("s-qr");
     if(qrSlide){ qrSlide.reset(); }
-    // No nudge here on purpose: cancelling is a deliberate escape, not something to prompt.
-    // The code waits for the guest, it does not auto-expire in seconds.
-    // Exits: the guest pays (success), or the waiter swipes to cancel and switch.
+    // Happy path (default): the guest scans and the provider confirms in ~3s -> success.
+    // This is a provider confirmation arriving, NOT an auto-timeout.
+    // Flow E passes waitOnly=true to hold in the committed waiting state (no timer) so
+    // the deliberate swipe-to-cancel edge case can be demonstrated. Cancelling is a
+    // deliberate escape, not something to prompt, so there is no nudge.
+    if(!waitOnly){
+      state.procTimers.push(setTimeout(function(){ go("s-success"); fireCheck(); }, 3000));
+    }
   };
-  // Demo helper: simulate the guest completing the scan on their phone
-  window.qrDemoPaid = function(){
-    startQR();
-    clearProcTimers();
-    state.procTimers.push(setTimeout(function(){ go("s-success"); fireCheck(); }, 2200));
-  };
+  // Demo helper: simulate the guest completing the scan on their phone (happy path)
+  window.qrDemoPaid = function(){ startQR(); };
   // Choosing another method cancels the code first so a late scan cannot land
   window.cancelQR = function(){
     clearProcTimers();
@@ -2175,7 +2183,7 @@
   window.jumpProc = function(){ closeFlow(true); startProcessing("success"); };
   window.jumpSuccess = function(){ clearProcTimers(); closeFlow(true); go("s-success"); fireCheck(); };
   window.jumpQRPaid = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); qrDemoPaid(); };
-  window.jumpQRShow = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(); };
+  window.jumpQRShow = function(){ clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true); startQR(true); };
   window.jumpPinDemo = function(){
     clearProcTimers(); scrim.classList.remove("is-on"); closeFlow(true);
     state.tip = 80; state.tipMode = "p20";
